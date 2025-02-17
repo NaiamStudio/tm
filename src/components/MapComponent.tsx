@@ -1,7 +1,21 @@
 
-import React, { useEffect, useRef, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import React, { useEffect, useRef } from 'react';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+// Fix for the default marker icon
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+
+let DefaultIcon = L.icon({
+  iconUrl: icon,
+  shadowUrl: iconShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+});
+
+L.Marker.prototype.options.icon = DefaultIcon;
 
 interface Property {
   id: number;
@@ -16,68 +30,52 @@ interface MapComponentProps {
 
 export const MapComponent = ({ properties }: MapComponentProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
-  const [token, setToken] = useState(localStorage.getItem('mapbox_token') || '');
+  const map = useRef<L.Map | null>(null);
+  const markersLayer = useRef<L.LayerGroup | null>(null);
 
   useEffect(() => {
-    if (!mapContainer.current || !token) return;
+    if (!mapContainer.current || map.current) return;
 
-    try {
-      mapboxgl.accessToken = token;
-      
-      map.current = new mapboxgl.Map({
-        container: mapContainer.current,
-        style: 'mapbox://styles/mapbox/light-v11',
-        center: [-64.1888, -31.4201], // Córdoba, Argentina
-        zoom: 13,
-      });
+    // Initialize map
+    map.current = L.map(mapContainer.current).setView([-31.4201, -64.1888], 13);
 
-      map.current.addControl(
-        new mapboxgl.NavigationControl(),
-        'top-right'
-      );
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map.current);
 
-      properties.forEach((property) => {
-        const marker = new mapboxgl.Marker()
-          .setLngLat(property.coords)
-          .setPopup(
-            new mapboxgl.Popup({ offset: 25 }).setHTML(
-              `<h3 class="font-bold">${property.title}</h3>
-               <p class="text-primary">$${property.price.toLocaleString()}/mes</p>`
-            )
-          )
-          .addTo(map.current!);
-      });
-    } catch (error) {
-      console.error('Error initializing map:', error);
-    }
+    // Create a layer group for markers
+    markersLayer.current = L.layerGroup().addTo(map.current);
 
     return () => {
       map.current?.remove();
     };
-  }, [properties, token]);
+  }, []);
 
-  if (!token) {
-    return (
-      <div className="p-4 bg-white rounded-lg shadow-lg">
-        <h3 className="text-lg font-semibold mb-4">Configuración del Mapa</h3>
-        <p className="mb-4">Para ver el mapa, ingresa tu token público de Mapbox:</p>
-        <input
-          type="text"
-          className="w-full p-2 border rounded mb-2"
-          placeholder="Ingresa tu token de Mapbox"
-          onChange={(e) => {
-            const newToken = e.target.value;
-            setToken(newToken);
-            localStorage.setItem('mapbox_token', newToken);
-          }}
-        />
-        <p className="text-sm text-gray-600">
-          Puedes obtener tu token en <a href="https://www.mapbox.com" target="_blank" rel="noopener noreferrer" className="text-primary">mapbox.com</a>
-        </p>
-      </div>
-    );
-  }
+  // Update markers when properties change
+  useEffect(() => {
+    if (!map.current || !markersLayer.current) return;
+
+    // Clear existing markers
+    markersLayer.current.clearLayers();
+
+    // Add new markers
+    properties.forEach((property) => {
+      const marker = L.marker([property.coords[1], property.coords[0]])
+        .bindPopup(`
+          <h3 class="font-bold">${property.title}</h3>
+          <p class="text-primary">$${property.price.toLocaleString()}/mes</p>
+        `);
+      marker.addTo(markersLayer.current!);
+    });
+
+    // Adjust map view to fit all markers if there are any
+    if (properties.length > 0) {
+      const bounds = L.latLngBounds(properties.map(p => [p.coords[1], p.coords[0]]));
+      map.current.fitBounds(bounds, { padding: [50, 50] });
+    }
+  }, [properties]);
 
   return (
     <div className="relative w-full h-full rounded-lg overflow-hidden shadow-lg">
