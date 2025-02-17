@@ -7,21 +7,12 @@ import 'leaflet/dist/leaflet.css';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
-let DefaultIcon = L.icon({
-  iconUrl: icon,
-  shadowUrl: iconShadow,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-});
-
-L.Marker.prototype.options.icon = DefaultIcon;
-
 interface Property {
   id: number;
   coords: [number, number];
   title: string;
   price: number;
+  type: 'rent' | 'sale';
 }
 
 interface MapComponentProps {
@@ -36,16 +27,13 @@ export const MapComponent = ({ properties }: MapComponentProps) => {
   useEffect(() => {
     if (!mapContainer.current || map.current) return;
 
-    // Initialize map
     map.current = L.map(mapContainer.current).setView([-31.4201, -64.1888], 13);
 
-    // Add OpenStreetMap tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '© OpenStreetMap contributors'
     }).addTo(map.current);
 
-    // Create a layer group for markers
     markersLayer.current = L.layerGroup().addTo(map.current);
 
     return () => {
@@ -53,16 +41,34 @@ export const MapComponent = ({ properties }: MapComponentProps) => {
     };
   }, []);
 
-  // Update markers when properties change
   useEffect(() => {
     if (!map.current || !markersLayer.current) return;
 
-    // Clear existing markers
     markersLayer.current.clearLayers();
 
-    // Add new markers
     properties.forEach((property) => {
-      const marker = L.marker([property.coords[1], property.coords[0]])
+      const markerColor = property.type === 'rent' ? '#7FFFD4' : '#FEF7CD';
+      
+      const markerHtmlStyles = `
+        background-color: ${markerColor};
+        width: 2rem;
+        height: 2rem;
+        display: block;
+        position: relative;
+        border-radius: 50%;
+        border: 2px solid #FFF;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      `;
+
+      const icon = L.divIcon({
+        className: 'custom-pin',
+        html: `<span style="${markerHtmlStyles}"></span>`,
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32]
+      });
+
+      const marker = L.marker([property.coords[1], property.coords[0]], { icon })
         .bindPopup(`
           <h3 class="font-bold">${property.title}</h3>
           <p class="text-primary">$${property.price.toLocaleString()}/mes</p>
@@ -70,7 +76,6 @@ export const MapComponent = ({ properties }: MapComponentProps) => {
       marker.addTo(markersLayer.current!);
     });
 
-    // Adjust map view to fit all markers if there are any
     if (properties.length > 0) {
       const bounds = L.latLngBounds(properties.map(p => [p.coords[1], p.coords[0]]));
       map.current.fitBounds(bounds, { padding: [50, 50] });

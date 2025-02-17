@@ -17,15 +17,16 @@ const HomePage = () => {
   const [location, setLocation] = useState("");
   const [propertyType, setPropertyType] = useState("");
   const [budget, setBudget] = useState("");
+  const [listingType, setListingType] = useState("all");
 
   const handleSearch = () => {
     navigate("/map", {
-      state: { location, propertyType, budget },
+      state: { location, propertyType, budget, listingType },
     });
   };
 
   return (
-    <div className="min-h-screen bg-primary overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-black/80 via-black/70 to-[#F97316]/20">
       <nav className="container mx-auto p-4 flex justify-between items-center">
         <Link to="/" className="text-white text-2xl font-bold">
           Terracarta
@@ -35,12 +36,6 @@ const HomePage = () => {
             Buscar
           </Button>
           <Button variant="ghost" className="text-white">
-            Publicar
-            <span className="ml-2 bg-white text-primary rounded-full w-5 h-5 flex items-center justify-center text-xs">
-              1
-            </span>
-          </Button>
-          <Button variant="ghost" className="text-white">
             ES
           </Button>
         </div>
@@ -48,16 +43,16 @@ const HomePage = () => {
 
       <main className="container mx-auto px-4 pt-20 pb-32">
         <div className="max-w-3xl mx-auto text-center mb-12">
-          <h1 className="text-white text-6xl font-bold mb-4 leading-tight">
+          <h1 className="text-white text-5xl font-bold mb-4 whitespace-nowrap">
             ¿Cómo es tu próximo hogar?
           </h1>
           <p className="text-white/90 text-xl">
-            Disfruta de una nueva experiencia de alquiler
+            Disfruta de una nueva experiencia en la búsqueda de tu próximo hogar
           </p>
         </div>
 
         <div className="bg-white rounded-xl p-2 shadow-lg max-w-4xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
             <div className="relative">
               <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <Input
@@ -113,6 +108,19 @@ const HomePage = () => {
               </Select>
             </div>
 
+            <div>
+              <Select value={listingType} onValueChange={setListingType}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Tipo de operación" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Mostrar todas</SelectItem>
+                  <SelectItem value="rent">Alquiler</SelectItem>
+                  <SelectItem value="sale">Venta</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
             <Button
               className="bg-primary hover:bg-primary/90 text-white"
               onClick={handleSearch}
@@ -123,15 +131,19 @@ const HomePage = () => {
         </div>
       </main>
 
-      <div className="absolute right-0 bottom-0 w-1/2 h-1/2">
-        <div className="animate-float">
-          <img
-            src="/lovable-uploads/c5b7e23d-56b6-4249-8831-63886e4f38be.png"
-            alt="Ilustración decorativa"
-            className="w-full h-full object-contain"
-          />
-        </div>
-      </div>
+      <footer className="container mx-auto p-4 text-center text-white/80">
+        <p>
+          2025 Terracarta - Desarrollado por{" "}
+          <a
+            href="https://naiam.studio"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary hover:text-primary/80"
+          >
+            naiam
+          </a>
+        </p>
+      </footer>
     </div>
   );
 };
