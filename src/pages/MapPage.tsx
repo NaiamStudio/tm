@@ -28,7 +28,8 @@ const cordobaProperties = [
     furnished: true,
     parking: "Si",
     amenities: ["Cocina equipada", "Balcón", "Aire acondicionado"],
-    whatsapp: "+5493512345678"
+    whatsapp: "+5493512345678",
+    image: "/photo-1721322800607-8c38375eef04"
   },
   {
     id: 2,
@@ -43,9 +44,141 @@ const cordobaProperties = [
     furnished: false,
     parking: "No",
     amenities: ["Cocina integrada", "Terraza"],
-    whatsapp: "+5493512345679"
+    whatsapp: "+5493512345679",
+    image: "/photo-1487958449943-2429e8be8625"
   },
+  // Nuevas propiedades
+  {
+    id: 3,
+    title: "Casa Familiar en Alto Alberdi",
+    type: "sale" as const,
+    location: "Alto Alberdi",
+    price: 120000,
+    coords: [-64.2000, -31.4100] as [number, number],
+    bedrooms: 4,
+    bathrooms: 2,
+    area: "180 M²",
+    furnished: false,
+    parking: "Si",
+    amenities: ["Patio amplio", "Parrilla", "Jardín"],
+    whatsapp: "+5493512345680",
+    image: "/photo-1524230572899-a752b3835840"
+  },
+  {
+    id: 4,
+    title: "Estudio en Centro",
+    type: "rent" as const,
+    location: "Centro",
+    price: 45000,
+    coords: [-64.1850, -31.4150] as [number, number],
+    bedrooms: 1,
+    bathrooms: 1,
+    area: "45 M²",
+    furnished: true,
+    parking: "No",
+    amenities: ["Cocina americana", "Internet incluido"],
+    whatsapp: "+5493512345681",
+    image: "/photo-1439337153520-7082a56a81f4"
+  },
+  {
+    id: 5,
+    title: "Penthouse en Nueva Córdoba",
+    type: "sale" as const,
+    location: "Nueva Córdoba",
+    price: 250000,
+    coords: [-64.1870, -31.4220] as [number, number],
+    bedrooms: 3,
+    bathrooms: 3,
+    area: "200 M²",
+    furnished: false,
+    parking: "Si",
+    amenities: ["Terraza privada", "Jacuzzi", "Vista panorámica"],
+    whatsapp: "+5493512345682",
+    image: "/photo-1506744038136-46273834b3fb"
+  },
+  {
+    id: 6,
+    title: "Duplex en Cofico",
+    type: "rent" as const,
+    location: "Cofico",
+    price: 90000,
+    coords: [-64.1920, -31.4000] as [number, number],
+    bedrooms: 2,
+    bathrooms: 2,
+    area: "110 M²",
+    furnished: true,
+    parking: "Si",
+    amenities: ["Patio", "Lavadero", "Seguridad 24hs"],
+    whatsapp: "+5493512345683",
+    image: "/photo-1721322800607-8c38375eef04"
+  },
+  {
+    id: 7,
+    title: "Casa en Villa Belgrano",
+    type: "sale" as const,
+    location: "Villa Belgrano",
+    price: 320000,
+    coords: [-64.2100, -31.3900] as [number, number],
+    bedrooms: 5,
+    bathrooms: 4,
+    area: "350 M²",
+    furnished: false,
+    parking: "Si",
+    amenities: ["Pileta", "Jardín", "Quincho"],
+    whatsapp: "+5493512345684",
+    image: "/photo-1487958449943-2429e8be8625"
+  },
+  {
+    id: 8,
+    title: "Departamento en General Paz",
+    type: "rent" as const,
+    location: "General Paz",
+    price: 70000,
+    coords: [-64.1750, -31.4050] as [number, number],
+    bedrooms: 2,
+    bathrooms: 1,
+    area: "85 M²",
+    furnished: true,
+    parking: "No",
+    amenities: ["Balcón", "Aire acondicionado"],
+    whatsapp: "+5493512345685",
+    image: "/photo-1524230572899-a752b3835840"
+  },
+  {
+    id: 9,
+    title: "Casa en Villa Allende",
+    type: "sale" as const,
+    location: "Villa Allende",
+    price: 280000,
+    coords: [-64.2950, -31.2950] as [number, number],
+    bedrooms: 4,
+    bathrooms: 3,
+    area: "280 M²",
+    furnished: false,
+    parking: "Si",
+    amenities: ["Jardín", "Pileta", "Quincho"],
+    whatsapp: "+5493512345686",
+    image: "/photo-1439337153520-7082a56a81f4"
+  },
+  {
+    id: 10,
+    title: "Monoambiente en Nueva Córdoba",
+    type: "rent" as const,
+    location: "Nueva Córdoba",
+    price: 55000,
+    coords: [-64.1880, -31.4230] as [number, number],
+    bedrooms: 1,
+    bathrooms: 1,
+    area: "35 M²",
+    furnished: true,
+    parking: "No",
+    amenities: ["Cocina integrada", "Aire acondicionado"],
+    whatsapp: "+5493512345687",
+    image: "/photo-1506744038136-46273834b3fb"
+  }
 ];
+
+const ITEMS_PER_PAGE = 8;
 
 const MapPage = () => {
   const location = useLocation();
@@ -55,6 +188,7 @@ const MapPage = () => {
   const [accommodationType, setAccommodationType] = useState("");
   const [listingType, setListingType] = useState("all");
   const [selectedProperty, setSelectedProperty] = useState<typeof cordobaProperties[0] | null>(null);
+  const [visibleItems, setVisibleItems] = useState(ITEMS_PER_PAGE);
 
   const filteredProperties = cordobaProperties.filter(property => {
     if (listingType === "all") return true;
@@ -70,20 +204,25 @@ const MapPage = () => {
     window.open(`https://wa.me/${whatsappNumber}?text=${message}`, '_blank');
   };
 
+  const loadMore = () => {
+    setVisibleItems(prev => Math.min(prev + ITEMS_PER_PAGE, filteredProperties.length));
+  };
+
+  const displayProperties = filteredProperties.slice(0, visibleItems);
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-black/90 to-[#F97316]/20">
+    <div className="min-h-screen bg-black">
       <nav className="border-b border-white/10">
         <div className="container mx-auto p-4 flex justify-between items-center">
           <Link to="/" className="text-white text-2xl font-bold">
             Terracarta
           </Link>
           <div className="flex gap-4">
-            <Button variant="ghost" className="text-white">
-              Buscar
-            </Button>
-            <Button variant="ghost" className="text-white">
-              ES
-            </Button>
+            <Link to="/map">
+              <Button variant="ghost" className="text-white">
+                Mapa
+              </Button>
+            </Link>
           </div>
         </div>
       </nav>
@@ -153,38 +292,55 @@ const MapPage = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="space-y-6">
-            {filteredProperties.map((property) => (
-              <div
-                key={property.id}
-                className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
-                onClick={() => handlePropertySelect(property)}
-              >
-                <div className="relative h-48 bg-primary">
-                  <div className={`absolute inset-0 ${
-                    property.type === 'rent' ? 'bg-[#7FFFD4]/20' : 'bg-[#FEF7CD]/20'
-                  }`} />
-                </div>
-                <div className="p-4">
-                  <div className="inline-block px-2 py-1 rounded text-xs font-medium bg-primary/10 text-primary mb-2">
-                    {property.type === 'rent' ? 'ALQUILER' : 'VENTA'}
+        <div className={`grid ${showMap ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'} gap-6`}>
+          <div className={`space-y-6 ${!showMap ? 'col-span-full' : ''}`}>
+            <div className={`grid ${showMap ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'} gap-6`}>
+              {displayProperties.map((property) => (
+                <div
+                  key={property.id}
+                  className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
+                  onClick={() => handlePropertySelect(property)}
+                >
+                  <div className="relative h-48">
+                    <img
+                      src={property.image}
+                      alt={property.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className={`absolute inset-0 ${
+                      property.type === 'rent' ? 'bg-[#7FFFD4]/20' : 'bg-[#FEF7CD]/20'
+                    }`} />
                   </div>
-                  <h3 className="text-lg font-semibold mb-2">
-                    {property.title}
-                  </h3>
-                  <p className="text-gray-600 mb-4">{property.location}</p>
-                  <div className="flex justify-between items-center">
-                    <div className="text-2xl font-bold text-primary">
-                      ${property.price.toLocaleString()}
+                  <div className="p-4">
+                    <div className="inline-block px-2 py-1 rounded text-xs font-medium bg-[#7FFFD4]/10 text-[#7FFFD4] mb-2">
+                      {property.type === 'rent' ? 'ALQUILER' : 'VENTA'}
                     </div>
-                    <div className="text-sm text-gray-500">
-                      {property.type === 'rent' ? '/mes' : ''}
+                    <h3 className="text-lg font-semibold mb-2">
+                      {property.title}
+                    </h3>
+                    <p className="text-gray-600 mb-4">{property.location}</p>
+                    <div className="flex justify-between items-center">
+                      <div className="text-2xl font-bold text-[#7FFFD4]">
+                        ${property.price.toLocaleString()}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {property.type === 'rent' ? '/mes' : ''}
+                      </div>
                     </div>
                   </div>
                 </div>
+              ))}
+            </div>
+            {visibleItems < filteredProperties.length && (
+              <div className="flex justify-center mt-8">
+                <Button 
+                  onClick={loadMore}
+                  className="bg-[#7FFFD4] hover:bg-[#7FFFD4]/90 text-black"
+                >
+                  Cargar más
+                </Button>
               </div>
-            ))}
+            )}
           </div>
 
           {showMap && (

@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -48,7 +48,7 @@ export const MapComponent = ({ properties, onPropertySelect }: MapComponentProps
     markersLayer.current.clearLayers();
 
     properties.forEach((property) => {
-      const markerColor = property.type === 'rent' ? '#7FFFD4' : '#FEF7CD';
+      const markerColor = property.type === 'rent' ? '#FFFFFF' : '#000000';
       
       const markerHtmlStyles = `
         background-color: ${markerColor};
@@ -58,14 +58,14 @@ export const MapComponent = ({ properties, onPropertySelect }: MapComponentProps
         position: relative;
         border-radius: 0.5rem 0.5rem 1rem 1rem;
         transform: rotate(45deg);
-        border: 2px solid #FFF;
+        border: 2px solid #000000;
         box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         &:after {
           content: '';
           width: 0.5rem;
           height: 0.5rem;
           margin: 0.25rem auto;
-          background: white;
+          background: #000000;
           border-radius: 50%;
           display: block;
         }
