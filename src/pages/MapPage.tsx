@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { MapComponent } from "@/components/MapComponent";
@@ -16,7 +17,7 @@ const cordobaProperties = [
   {
     id: 1,
     title: "Apartamento de Lujo en Nueva Córdoba",
-    type: "rent",
+    type: "rent" as const,
     location: "Nueva Córdoba",
     price: 80000,
     coords: [-64.1888, -31.4201] as [number, number],
@@ -27,7 +28,7 @@ const cordobaProperties = [
   {
     id: 2,
     title: "Loft Moderno en Güemes",
-    type: "sale",
+    type: "sale" as const,
     location: "Güemes",
     price: 65000,
     coords: [-64.1900, -31.4250] as [number, number],
