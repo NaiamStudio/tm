@@ -26,18 +26,17 @@ const HomePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black/80 via-black/70 to-[#F97316]/20">
+    <div className="min-h-screen bg-black">
       <nav className="container mx-auto p-4 flex justify-between items-center">
         <Link to="/" className="text-white text-2xl font-bold">
           Terracarta
         </Link>
         <div className="flex gap-4">
-          <Button variant="ghost" className="text-white">
-            Buscar
-          </Button>
-          <Button variant="ghost" className="text-white">
-            ES
-          </Button>
+          <Link to="/map">
+            <Button variant="ghost" className="text-white">
+              Mapa
+            </Button>
+          </Link>
         </div>
       </nav>
 
@@ -114,7 +113,7 @@ const HomePage = () => {
                   <SelectValue placeholder="Tipo de operación" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Mostrar todas</SelectItem>
+                  <SelectItem value="all">En venta y en alquiler</SelectItem>
                   <SelectItem value="rent">Alquiler</SelectItem>
                   <SelectItem value="sale">Venta</SelectItem>
                 </SelectContent>
@@ -122,7 +121,7 @@ const HomePage = () => {
             </div>
 
             <Button
-              className="bg-primary hover:bg-primary/90 text-white"
+              className="bg-[#7FFFD4] hover:bg-[#7FFFD4]/90 text-black"
               onClick={handleSearch}
             >
               <Search className="mr-2 h-4 w-4" /> Buscar
@@ -131,14 +130,14 @@ const HomePage = () => {
         </div>
       </main>
 
-      <footer className="container mx-auto p-4 text-center text-white/80">
-        <p>
+      <footer className="fixed bottom-0 w-full bg-black border-t border-white/10 py-4">
+        <p className="text-center text-white">
           2025 Terracarta - Desarrollado por{" "}
           <a
             href="https://naiam.studio"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-primary hover:text-primary/80"
+            className="text-[#7FFFD4] hover:text-[#7FFFD4]/80"
           >
             naiam
           </a>
