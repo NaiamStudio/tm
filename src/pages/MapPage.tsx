@@ -20,7 +20,7 @@ const cordobaProperties = [
     type: "FLAT",
     location: "Nueva Córdoba",
     price: 80000,
-    coords: [-31.4201, -64.1888],
+    coords: [-64.1888, -31.4201] as [number, number], // Correct format: [longitude, latitude]
     bedrooms: 3,
     bathrooms: 2,
     area: "120 M²",
@@ -31,7 +31,7 @@ const cordobaProperties = [
     type: "LOFT",
     location: "Güemes",
     price: 65000,
-    coords: [-31.4250, -64.1900],
+    coords: [-64.1900, -31.4250] as [number, number], // Correct format: [longitude, latitude]
     bedrooms: 1,
     bathrooms: 1,
     area: "80 M²",
