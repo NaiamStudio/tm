@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { MapComponent } from "@/components/MapComponent";
 import { Button } from "@/components/ui/button";
 import { Search, Heart } from "lucide-react";
@@ -16,27 +16,26 @@ import { Switch } from "@/components/ui/switch";
 const cordobaProperties = [
   {
     id: 1,
-    title: "Luxury Apartment in Nueva Córdoba",
-    type: "FLAT",
+    title: "Apartamento de Lujo en Nueva Córdoba",
+    type: "DEPARTAMENTO",
     location: "Nueva Córdoba",
     price: 80000,
-    coords: [-64.1888, -31.4201] as [number, number], // Correct format: [longitude, latitude]
+    coords: [-64.1888, -31.4201] as [number, number],
     bedrooms: 3,
     bathrooms: 2,
     area: "120 M²",
   },
   {
     id: 2,
-    title: "Modern Loft in Güemes",
+    title: "Loft Moderno en Güemes",
     type: "LOFT",
     location: "Güemes",
     price: 65000,
-    coords: [-64.1900, -31.4250] as [number, number], // Correct format: [longitude, latitude]
+    coords: [-64.1900, -31.4250] as [number, number],
     bedrooms: 1,
     bathrooms: 1,
     area: "80 M²",
   },
-  // Add more properties as needed
 ];
 
 const MapPage = () => {
@@ -50,11 +49,13 @@ const MapPage = () => {
     <div className="min-h-screen bg-white">
       <nav className="border-b">
         <div className="container mx-auto p-4 flex justify-between items-center">
-          <div className="text-primary text-2xl font-bold">Flate</div>
+          <Link to="/" className="text-primary text-2xl font-bold">
+            Terracarta
+          </Link>
           <div className="flex gap-4">
-            <Button variant="outline">Search</Button>
-            <Button className="bg-primary hover:bg-primary/90">List</Button>
-            <Button variant="ghost">EN</Button>
+            <Button variant="outline">Buscar</Button>
+            <Button className="bg-primary hover:bg-primary/90">Publicar</Button>
+            <Button variant="ghost">ES</Button>
           </div>
         </div>
       </nav>
@@ -67,7 +68,7 @@ const MapPage = () => {
               onValueChange={setSelectedLocation}
             >
               <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="Select location" />
+                <SelectValue placeholder="Seleccionar ubicación" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="Córdoba">Córdoba</SelectItem>
@@ -78,14 +79,14 @@ const MapPage = () => {
 
             <Select value={priceRange} onValueChange={setPriceRange}>
               <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="Price" />
+                <SelectValue placeholder="Precio" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="0-50000">$0 - $50,000</SelectItem>
+                <SelectItem value="0-50000">$0 - $50.000</SelectItem>
                 <SelectItem value="50000-100000">
-                  $50,000 - $100,000
+                  $50.000 - $100.000
                 </SelectItem>
-                <SelectItem value="100000+">$100,000+</SelectItem>
+                <SelectItem value="100000+">$100.000+</SelectItem>
               </SelectContent>
             </Select>
 
@@ -94,18 +95,18 @@ const MapPage = () => {
               onValueChange={setAccommodationType}
             >
               <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="Accommodations" />
+                <SelectValue placeholder="Tipo de propiedad" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="flat">Flat</SelectItem>
-                <SelectItem value="house">House</SelectItem>
+                <SelectItem value="flat">Departamento</SelectItem>
+                <SelectItem value="house">Casa</SelectItem>
                 <SelectItem value="loft">Loft</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600">Show map</span>
+            <span className="text-sm text-gray-600">Mostrar mapa</span>
             <Switch
               checked={showMap}
               onCheckedChange={setShowMap}
@@ -141,7 +142,7 @@ const MapPage = () => {
                     <div className="text-2xl font-bold text-primary">
                       ${property.price.toLocaleString()}
                     </div>
-                    <div className="text-sm text-gray-500">/month</div>
+                    <div className="text-sm text-gray-500">/mes</div>
                   </div>
                 </div>
               </div>

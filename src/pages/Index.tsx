@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Search, MapPin, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,19 +27,21 @@ const HomePage = () => {
   return (
     <div className="min-h-screen bg-primary overflow-hidden">
       <nav className="container mx-auto p-4 flex justify-between items-center">
-        <div className="text-white text-2xl font-bold">Flate</div>
+        <Link to="/" className="text-white text-2xl font-bold">
+          Terracarta
+        </Link>
         <div className="flex gap-4">
           <Button variant="ghost" className="text-white">
-            Search
+            Buscar
           </Button>
           <Button variant="ghost" className="text-white">
-            List
+            Publicar
             <span className="ml-2 bg-white text-primary rounded-full w-5 h-5 flex items-center justify-center text-xs">
               1
             </span>
           </Button>
           <Button variant="ghost" className="text-white">
-            EN
+            ES
           </Button>
         </div>
       </nav>
@@ -47,10 +49,10 @@ const HomePage = () => {
       <main className="container mx-auto px-4 pt-20 pb-32">
         <div className="max-w-3xl mx-auto text-center mb-12">
           <h1 className="text-white text-6xl font-bold mb-4 leading-tight">
-            How's your next home?
+            ¿Cómo es tu próximo hogar?
           </h1>
           <p className="text-white/90 text-xl">
-            Enjoy a new rental experience
+            Disfruta de una nueva experiencia de alquiler
           </p>
         </div>
 
@@ -59,7 +61,7 @@ const HomePage = () => {
             <div className="relative">
               <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <Input
-                placeholder="Location"
+                placeholder="Ubicación"
                 className="pl-10"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
@@ -86,11 +88,11 @@ const HomePage = () => {
                 onValueChange={setPropertyType}
               >
                 <SelectTrigger className="pl-10">
-                  <SelectValue placeholder="Type of place" />
+                  <SelectValue placeholder="Tipo de propiedad" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="flat">Flat</SelectItem>
-                  <SelectItem value="house">House</SelectItem>
+                  <SelectItem value="flat">Departamento</SelectItem>
+                  <SelectItem value="house">Casa</SelectItem>
                   <SelectItem value="loft">Loft</SelectItem>
                 </SelectContent>
               </Select>
@@ -99,14 +101,14 @@ const HomePage = () => {
             <div>
               <Select value={budget} onValueChange={setBudget}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Budget range" />
+                  <SelectValue placeholder="Rango de precio" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="0-50000">$0 - $50,000</SelectItem>
+                  <SelectItem value="0-50000">$0 - $50.000</SelectItem>
                   <SelectItem value="50000-100000">
-                    $50,000 - $100,000
+                    $50.000 - $100.000
                   </SelectItem>
-                  <SelectItem value="100000+">$100,000+</SelectItem>
+                  <SelectItem value="100000+">$100.000+</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -115,7 +117,7 @@ const HomePage = () => {
               className="bg-primary hover:bg-primary/90 text-white"
               onClick={handleSearch}
             >
-              <Search className="mr-2 h-4 w-4" /> Search
+              <Search className="mr-2 h-4 w-4" /> Buscar
             </Button>
           </div>
         </div>
@@ -125,7 +127,7 @@ const HomePage = () => {
         <div className="animate-float">
           <img
             src="/lovable-uploads/c5b7e23d-56b6-4249-8831-63886e4f38be.png"
-            alt="Decorative illustration"
+            alt="Ilustración decorativa"
             className="w-full h-full object-contain"
           />
         </div>
