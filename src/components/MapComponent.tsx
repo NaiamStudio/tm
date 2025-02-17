@@ -1,11 +1,7 @@
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-
-// Fix for the default marker icon
-import icon from 'leaflet/dist/images/marker-icon.png';
-import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
 interface Property {
   id: number;
@@ -13,13 +9,18 @@ interface Property {
   title: string;
   price: number;
   type: 'rent' | 'sale';
+  bedrooms: number;
+  bathrooms: number;
+  area: string;
+  location: string;
 }
 
 interface MapComponentProps {
   properties: Property[];
+  onPropertySelect: (property: Property) => void;
 }
 
-export const MapComponent = ({ properties }: MapComponentProps) => {
+export const MapComponent = ({ properties, onPropertySelect }: MapComponentProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<L.Map | null>(null);
   const markersLayer = useRef<L.LayerGroup | null>(null);
@@ -51,28 +52,38 @@ export const MapComponent = ({ properties }: MapComponentProps) => {
       
       const markerHtmlStyles = `
         background-color: ${markerColor};
-        width: 2rem;
-        height: 2rem;
+        width: 1rem;
+        height: 1.5rem;
         display: block;
         position: relative;
-        border-radius: 50%;
+        border-radius: 0.5rem 0.5rem 1rem 1rem;
+        transform: rotate(45deg);
         border: 2px solid #FFF;
         box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        &:after {
+          content: '';
+          width: 0.5rem;
+          height: 0.5rem;
+          margin: 0.25rem auto;
+          background: white;
+          border-radius: 50%;
+          display: block;
+        }
       `;
 
       const icon = L.divIcon({
         className: 'custom-pin',
         html: `<span style="${markerHtmlStyles}"></span>`,
-        iconSize: [32, 32],
-        iconAnchor: [16, 32],
-        popupAnchor: [0, -32]
+        iconSize: [24, 36],
+        iconAnchor: [12, 36],
+        popupAnchor: [0, -36],
+        tooltipAnchor: [12, -24]
       });
 
       const marker = L.marker([property.coords[1], property.coords[0]], { icon })
-        .bindPopup(`
-          <h3 class="font-bold">${property.title}</h3>
-          <p class="text-primary">$${property.price.toLocaleString()}/mes</p>
-        `);
+        .bindTooltip(property.title)
+        .on('click', () => onPropertySelect(property));
+      
       marker.addTo(markersLayer.current!);
     });
 
@@ -80,7 +91,7 @@ export const MapComponent = ({ properties }: MapComponentProps) => {
       const bounds = L.latLngBounds(properties.map(p => [p.coords[1], p.coords[0]]));
       map.current.fitBounds(bounds, { padding: [50, 50] });
     }
-  }, [properties]);
+  }, [properties, onPropertySelect]);
 
   return (
     <div className="relative w-full h-full rounded-lg overflow-hidden shadow-lg">
