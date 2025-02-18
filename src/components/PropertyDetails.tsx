@@ -84,7 +84,7 @@ export const PropertyDetails = ({
                 </ul>
               </div>
               <div>
-                <h3 className="font-semibold mb-2">Amenities</h3>
+                <h3 className="font-semibold mb-2">Comodidades</h3>
                 <ul className="space-y-2">
                   {property.amenities.map((amenity, index) => (
                     <li key={index}>{amenity}</li>

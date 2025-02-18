@@ -318,12 +318,26 @@ const MapPage = () => {
             handleLocationSelect={handleLocationSelect}
           />
 
-          <div className="flex items-center gap-2 justify-end">
-            <span className="text-sm text-white">Mostrar mapa</span>
-            <Switch
-              checked={showMap}
-              onCheckedChange={setShowMap}
-            />
+          <div className="flex flex-col items-center gap-4">
+            <div className="flex items-center gap-2 justify-end w-full">
+              <span className="text-sm text-white">Mostrar mapa</span>
+              <Switch
+                checked={showMap}
+                onCheckedChange={setShowMap}
+              />
+            </div>
+            {showMap && (
+              <div className="flex items-center gap-4 bg-white/10 px-4 py-2 rounded-full">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-[#7FFFD4]"></div>
+                  <span className="text-sm text-white">Alquiler</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-[#FEF7CD]"></div>
+                  <span className="text-sm text-white">Venta</span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

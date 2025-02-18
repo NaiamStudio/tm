@@ -13,12 +13,16 @@ import {
 } from "@/components/ui/select";
 
 const locations = [
-  "Nueva Córdoba",
-  "Centro",
-  "Alberdi",
-  "Güemes",
-  "General Paz",
-  "Alta Córdoba"
+  "Sin filtrar",
+  "Nueva Córdoba, Ciudad de Córdoba, Córdoba",
+  "Centro, Ciudad de Córdoba, Córdoba",
+  "Alberdi, Ciudad de Córdoba, Córdoba",
+  "Güemes, Ciudad de Córdoba, Córdoba",
+  "General Paz, Ciudad de Córdoba, Córdoba",
+  "Alta Córdoba, Ciudad de Córdoba, Córdoba",
+  "Villa Allende, Córdoba",
+  "Mendiolaza, Córdoba",
+  "Saldán, Córdoba"
 ];
 
 const HomePage = () => {
@@ -122,6 +126,7 @@ const HomePage = () => {
                   <SelectValue placeholder="Tipo de propiedad" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="all">Sin filtrar</SelectItem>
                   <SelectItem value="flat">Departamento</SelectItem>
                   <SelectItem value="house">Casa</SelectItem>
                   <SelectItem value="loft">Loft</SelectItem>
@@ -135,10 +140,9 @@ const HomePage = () => {
                   <SelectValue placeholder="Rango de precio" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="all">Sin filtrar</SelectItem>
                   <SelectItem value="0-50000">$0 - $50.000</SelectItem>
-                  <SelectItem value="50000-100000">
-                    $50.000 - $100.000
-                  </SelectItem>
+                  <SelectItem value="50000-100000">$50.000 - $100.000</SelectItem>
                   <SelectItem value="100000+">$100.000+</SelectItem>
                 </SelectContent>
               </Select>
@@ -150,7 +154,7 @@ const HomePage = () => {
                   <SelectValue placeholder="Tipo de operación" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">En venta y en alquiler</SelectItem>
+                  <SelectItem value="all">Sin filtrar</SelectItem>
                   <SelectItem value="rent">Alquiler</SelectItem>
                   <SelectItem value="sale">Venta</SelectItem>
                 </SelectContent>
