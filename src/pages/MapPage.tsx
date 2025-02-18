@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { MapComponent } from "@/components/MapComponent";
@@ -39,7 +38,7 @@ const cordobaProperties = [
     parking: "Si",
     amenities: ["Cocina equipada", "Balcón", "Aire acondicionado"],
     whatsapp: "+5493512345678",
-    image: "/photo-1721322800607-8c38375eef04"
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Apartamentos_-_panoramio.jpg/1280px-Apartamentos_-_panoramio.jpg"
   },
   {
     id: 2,
@@ -55,7 +54,7 @@ const cordobaProperties = [
     parking: "No",
     amenities: ["Cocina integrada", "Terraza"],
     whatsapp: "+5493512345679",
-    image: "/photo-1487958449943-2429e8be8625"
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Loft_room.jpg/1280px-Loft_room.jpg"
   },
   {
     id: 3,
@@ -71,7 +70,7 @@ const cordobaProperties = [
     parking: "Si",
     amenities: ["Patio amplio", "Parrilla", "Jardín"],
     whatsapp: "+5493512345680",
-    image: "/photo-1524230572899-a752b3835840"
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Casa_Modernista.jpg/1280px-Casa_Modernista.jpg"
   },
   {
     id: 4,
@@ -87,7 +86,7 @@ const cordobaProperties = [
     parking: "No",
     amenities: ["Cocina americana", "Internet incluido"],
     whatsapp: "+5493512345681",
-    image: "/photo-1439337153520-7082a56a81f4"
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Modern_urban_living_room.jpg/1280px-Modern_urban_living_room.jpg"
   },
   {
     id: 5,
@@ -103,7 +102,7 @@ const cordobaProperties = [
     parking: "Si",
     amenities: ["Terraza privada", "Jacuzzi", "Vista panorámica"],
     whatsapp: "+5493512345682",
-    image: "/photo-1506744038136-46273834b3fb"
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Penthouse_balcony.jpg/1280px-Penthouse_balcony.jpg"
   },
   {
     id: 6,
@@ -119,7 +118,7 @@ const cordobaProperties = [
     parking: "Si",
     amenities: ["Patio", "Lavadero", "Seguridad 24hs"],
     whatsapp: "+5493512345683",
-    image: "/photo-1721322800607-8c38375eef04"
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Modern_duplex_house.jpg/1280px-Modern_duplex_house.jpg"
   },
   {
     id: 7,
@@ -135,7 +134,7 @@ const cordobaProperties = [
     parking: "Si",
     amenities: ["Pileta", "Jardín", "Quincho"],
     whatsapp: "+5493512345684",
-    image: "/photo-1487958449943-2429e8be8625"
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Luxury_house_with_pool.jpg/1280px-Luxury_house_with_pool.jpg"
   },
   {
     id: 8,
@@ -151,7 +150,7 @@ const cordobaProperties = [
     parking: "No",
     amenities: ["Balcón", "Aire acondicionado"],
     whatsapp: "+5493512345685",
-    image: "/photo-1524230572899-a752b3835840"
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/Modern_apartment_building_facade.jpg/1280px-Modern_apartment_building_facade.jpg"
   },
   {
     id: 9,
@@ -167,7 +166,7 @@ const cordobaProperties = [
     parking: "Si",
     amenities: ["Jardín", "Pileta", "Quincho"],
     whatsapp: "+5493512345686",
-    image: "/photo-1439337153520-7082a56a81f4"
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Modern_villa_with_garden.jpg/1280px-Modern_villa_with_garden.jpg"
   },
   {
     id: 10,
@@ -183,7 +182,7 @@ const cordobaProperties = [
     parking: "No",
     amenities: ["Cocina integrada", "Aire acondicionado"],
     whatsapp: "+5493512345687",
-    image: "/photo-1506744038136-46273834b3fb"
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Studio_apartment_interior.jpg/1280px-Studio_apartment_interior.jpg"
   }
 ];
 
@@ -348,7 +347,7 @@ const MapPage = () => {
 
         <div className={`grid ${showMap ? 'md:grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'} gap-6`}>
           {showMap && (
-            <div className="md:order-2 md:h-[calc(100vh-200px)] h-[50vh] sticky top-24 bg-black z-10">
+            <div className="relative md:order-2 md:h-[calc(100vh-200px)] h-[50vh] md:sticky md:top-24 bg-black z-10">
               <MapComponent 
                 properties={filteredProperties}
                 onPropertySelect={handlePropertySelect}
