@@ -6,6 +6,15 @@ interface Property {
   location: string;
   price: number;
   image: string;
+  coords: [number, number];
+  bedrooms: number;
+  bathrooms: number;
+  area: string;
+  furnished: boolean;
+  parking: string;
+  amenities: string[];
+  whatsapp: string;
+  gallery: string[];
 }
 
 interface PropertyCardProps {

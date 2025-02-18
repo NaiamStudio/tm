@@ -53,13 +53,17 @@ const cordobaProperties = [
     parking: "No",
     amenities: ["Cocina integrada", "Terraza"],
     whatsapp: "+5493512345679",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Loft_room.jpg/1280px-Loft_room.jpg"
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Loft_room.jpg/1280px-Loft_room.jpg",
+    gallery: [
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Loft_room.jpg/1280px-Loft_room.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Modern_urban_living_room.jpg/1280px-Modern_urban_living_room.jpg"
+    ]
   },
   {
     id: 3,
     title: "Casa Familiar en Alto Alberdi",
     type: "sale" as const,
-    location: "Alto Alberdi, Ciudad de Córdoba, Córdoba",
+    location: "Alberdi, Ciudad de Córdoba, Córdoba",
     price: 120000,
     coords: [-64.2000, -31.4100] as [number, number],
     bedrooms: 4,
@@ -69,7 +73,11 @@ const cordobaProperties = [
     parking: "Si",
     amenities: ["Patio amplio", "Parrilla", "Jardín"],
     whatsapp: "+5493512345680",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Casa_Modernista.jpg/1280px-Casa_Modernista.jpg"
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Casa_Modernista.jpg/1280px-Casa_Modernista.jpg",
+    gallery: [
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Casa_Modernista.jpg/1280px-Casa_Modernista.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Penthouse_balcony.jpg/1280px-Penthouse_balcony.jpg"
+    ]
   },
   {
     id: 4,
@@ -85,7 +93,10 @@ const cordobaProperties = [
     parking: "No",
     amenities: ["Cocina americana", "Internet incluido"],
     whatsapp: "+5493512345681",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Modern_urban_living_room.jpg/1280px-Modern_urban_living_room.jpg"
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Modern_urban_living_room.jpg/1280px-Modern_urban_living_room.jpg",
+    gallery: [
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Modern_urban_living_room.jpg/1280px-Modern_urban_living_room.jpg"
+    ]
   },
   {
     id: 5,
@@ -101,7 +112,11 @@ const cordobaProperties = [
     parking: "Si",
     amenities: ["Terraza privada", "Jacuzzi", "Vista panorámica"],
     whatsapp: "+5493512345682",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Penthouse_balcony.jpg/1280px-Penthouse_balcony.jpg"
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Penthouse_balcony.jpg/1280px-Penthouse_balcony.jpg",
+    gallery: [
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Penthouse_balcony.jpg/1280px-Penthouse_balcony.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Modern_urban_living_room.jpg/1280px-Modern_urban_living_room.jpg"
+    ]
   },
   {
     id: 6,
@@ -117,7 +132,10 @@ const cordobaProperties = [
     parking: "Si",
     amenities: ["Patio", "Lavadero", "Seguridad 24hs"],
     whatsapp: "+5493512345683",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Modern_duplex_house.jpg/1280px-Modern_duplex_house.jpg"
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Modern_duplex_house.jpg/1280px-Modern_duplex_house.jpg",
+    gallery: [
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Modern_duplex_house.jpg/1280px-Modern_duplex_house.jpg"
+    ]
   },
   {
     id: 7,
@@ -133,7 +151,10 @@ const cordobaProperties = [
     parking: "Si",
     amenities: ["Pileta", "Jardín", "Quincho"],
     whatsapp: "+5493512345684",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Luxury_house_with_pool.jpg/1280px-Luxury_house_with_pool.jpg"
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Luxury_house_with_pool.jpg/1280px-Luxury_house_with_pool.jpg",
+    gallery: [
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Luxury_house_with_pool.jpg/1280px-Luxury_house_with_pool.jpg"
+    ]
   },
   {
     id: 8,
@@ -149,7 +170,10 @@ const cordobaProperties = [
     parking: "No",
     amenities: ["Balcón", "Aire acondicionado"],
     whatsapp: "+5493512345685",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/Modern_apartment_building_facade.jpg/1280px-Modern_apartment_building_facade.jpg"
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/Modern_apartment_building_facade.jpg/1280px-Modern_apartment_building_facade.jpg",
+    gallery: [
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/Modern_apartment_building_facade.jpg/1280px-Modern_apartment_building_facade.jpg"
+    ]
   },
   {
     id: 9,
@@ -165,7 +189,10 @@ const cordobaProperties = [
     parking: "Si",
     amenities: ["Jardín", "Pileta", "Quincho"],
     whatsapp: "+5493512345686",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Modern_villa_with_garden.jpg/1280px-Modern_villa_with_garden.jpg"
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Modern_villa_with_garden.jpg/1280px-Modern_villa_with_garden.jpg",
+    gallery: [
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Modern_villa_with_garden.jpg/1280px-Modern_villa_with_garden.jpg"
+    ]
   },
   {
     id: 10,
@@ -181,7 +208,10 @@ const cordobaProperties = [
     parking: "No",
     amenities: ["Cocina integrada", "Aire acondicionado"],
     whatsapp: "+5493512345687",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Studio_apartment_interior.jpg/1280px-Studio_apartment_interior.jpg"
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Studio_apartment_interior.jpg/1280px-Studio_apartment_interior.jpg",
+    gallery: [
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Studio_apartment_interior.jpg/1280px-Studio_apartment_interior.jpg"
+    ]
   }
 ];
 
