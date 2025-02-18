@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { MapComponent } from "@/components/MapComponent";
@@ -347,7 +348,7 @@ const MapPage = () => {
 
         <div className={`grid ${showMap ? 'md:grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'} gap-6`}>
           {showMap && (
-            <div className="md:order-2 h-[calc(100vh-200px)] sticky top-24">
+            <div className="md:order-2 md:h-[calc(100vh-200px)] h-[50vh] sticky top-24 bg-black z-10">
               <MapComponent 
                 properties={filteredProperties}
                 onPropertySelect={handlePropertySelect}
@@ -355,7 +356,7 @@ const MapPage = () => {
             </div>
           )}
 
-          <div className={`space-y-6 ${!showMap ? 'col-span-full' : 'md:order-1'}`}>
+          <div className={`space-y-6 ${!showMap ? 'col-span-full' : 'md:order-1'} relative z-0`}>
             <div className={`grid ${showMap ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'} gap-6`}>
               {displayProperties.map((property) => (
                 <div
