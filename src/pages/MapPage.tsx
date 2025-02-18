@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { MapComponent } from "@/components/MapComponent";
 import { Button } from "@/components/ui/button";
-import { Search, Heart, X } from "lucide-react";
+import { Search, Heart, X, ExternalLink } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -15,12 +15,13 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
 const locations = [
-  "Nueva Córdoba",
-  "Centro",
-  "Alberdi",
-  "Güemes",
-  "General Paz",
-  "Alta Córdoba"
+  "Sin filtrar",
+  "Nueva Córdoba, Ciudad de Córdoba, Córdoba",
+  "Centro, Ciudad de Córdoba, Córdoba",
+  "Alberdi, Ciudad de Córdoba, Córdoba",
+  "Güemes, Ciudad de Córdoba, Córdoba",
+  "General Paz, Ciudad de Córdoba, Córdoba",
+  "Alta Córdoba, Ciudad de Córdoba, Córdoba"
 ];
 
 const cordobaProperties = [
@@ -28,7 +29,7 @@ const cordobaProperties = [
     id: 1,
     title: "Apartamento de Lujo en Nueva Córdoba",
     type: "rent" as const,
-    location: "Nueva Córdoba",
+    location: "Nueva Córdoba, Ciudad de Córdoba, Córdoba",
     price: 80000,
     coords: [-64.1888, -31.4201] as [number, number],
     bedrooms: 3,
@@ -38,13 +39,18 @@ const cordobaProperties = [
     parking: "Si",
     amenities: ["Cocina equipada", "Balcón", "Aire acondicionado"],
     whatsapp: "+5493512345678",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Apartamentos_-_panoramio.jpg/1280px-Apartamentos_-_panoramio.jpg"
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Apartamentos_-_panoramio.jpg/1280px-Apartamentos_-_panoramio.jpg",
+    gallery: [
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Apartamentos_-_panoramio.jpg/1280px-Apartamentos_-_panoramio.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Modern_urban_living_room.jpg/1280px-Modern_urban_living_room.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Penthouse_balcony.jpg/1280px-Penthouse_balcony.jpg"
+    ]
   },
   {
     id: 2,
     title: "Loft Moderno en Güemes",
     type: "sale" as const,
-    location: "Güemes",
+    location: "Güemes, Ciudad de Córdoba, Córdoba",
     price: 65000,
     coords: [-64.1900, -31.4250] as [number, number],
     bedrooms: 1,
@@ -60,7 +66,7 @@ const cordobaProperties = [
     id: 3,
     title: "Casa Familiar en Alto Alberdi",
     type: "sale" as const,
-    location: "Alto Alberdi",
+    location: "Alto Alberdi, Ciudad de Córdoba, Córdoba",
     price: 120000,
     coords: [-64.2000, -31.4100] as [number, number],
     bedrooms: 4,
@@ -76,7 +82,7 @@ const cordobaProperties = [
     id: 4,
     title: "Estudio en Centro",
     type: "rent" as const,
-    location: "Centro",
+    location: "Centro, Ciudad de Córdoba, Córdoba",
     price: 45000,
     coords: [-64.1850, -31.4150] as [number, number],
     bedrooms: 1,
@@ -92,7 +98,7 @@ const cordobaProperties = [
     id: 5,
     title: "Penthouse en Nueva Córdoba",
     type: "sale" as const,
-    location: "Nueva Córdoba",
+    location: "Nueva Córdoba, Ciudad de Córdoba, Córdoba",
     price: 250000,
     coords: [-64.1870, -31.4220] as [number, number],
     bedrooms: 3,
@@ -108,7 +114,7 @@ const cordobaProperties = [
     id: 6,
     title: "Duplex en Cofico",
     type: "rent" as const,
-    location: "Cofico",
+    location: "Cofico, Ciudad de Córdoba, Córdoba",
     price: 90000,
     coords: [-64.1920, -31.4000] as [number, number],
     bedrooms: 2,
@@ -124,7 +130,7 @@ const cordobaProperties = [
     id: 7,
     title: "Casa en Villa Belgrano",
     type: "sale" as const,
-    location: "Villa Belgrano",
+    location: "Villa Belgrano, Ciudad de Córdoba, Córdoba",
     price: 320000,
     coords: [-64.2100, -31.3900] as [number, number],
     bedrooms: 5,
@@ -140,7 +146,7 @@ const cordobaProperties = [
     id: 8,
     title: "Departamento en General Paz",
     type: "rent" as const,
-    location: "General Paz",
+    location: "General Paz, Ciudad de Córdoba, Córdoba",
     price: 70000,
     coords: [-64.1750, -31.4050] as [number, number],
     bedrooms: 2,
@@ -156,7 +162,7 @@ const cordobaProperties = [
     id: 9,
     title: "Casa en Villa Allende",
     type: "sale" as const,
-    location: "Villa Allende",
+    location: "Villa Allende, Ciudad de Córdoba, Córdoba",
     price: 280000,
     coords: [-64.2950, -31.2950] as [number, number],
     bedrooms: 4,
@@ -172,7 +178,7 @@ const cordobaProperties = [
     id: 10,
     title: "Monoambiente en Nueva Córdoba",
     type: "rent" as const,
-    location: "Nueva Córdoba",
+    location: "Nueva Córdoba, Ciudad de Córdoba, Córdoba",
     price: 55000,
     coords: [-64.1880, -31.4230] as [number, number],
     bedrooms: 1,
@@ -198,6 +204,7 @@ const MapPage = () => {
   const [selectedProperty, setSelectedProperty] = useState<typeof cordobaProperties[0] | null>(null);
   const [visibleItems, setVisibleItems] = useState(ITEMS_PER_PAGE);
   const [showLocations, setShowLocations] = useState(false);
+  const [loadedImages, setLoadedImages] = useState<string[]>([]);
 
   const filteredProperties = cordobaProperties.filter(property => {
     let matches = true;
@@ -206,11 +213,11 @@ const MapPage = () => {
       matches = matches && property.type === listingType;
     }
     
-    if (selectedLocation) {
+    if (selectedLocation && selectedLocation !== "Sin filtrar") {
       matches = matches && property.location.toLowerCase().includes(selectedLocation.toLowerCase());
     }
     
-    if (propertyType) {
+    if (propertyType && propertyType !== "all") {
       const propertyTypeMap = {
         flat: "Apartamento",
         house: "Casa",
@@ -219,7 +226,7 @@ const MapPage = () => {
       matches = matches && property.title.includes(propertyTypeMap[propertyType as keyof typeof propertyTypeMap]);
     }
     
-    if (budget) {
+    if (budget && budget !== "all") {
       const [min, max] = budget.split("-").map(Number);
       if (max) {
         matches = matches && property.price >= min && property.price <= max;
@@ -233,6 +240,10 @@ const MapPage = () => {
 
   const handlePropertySelect = (property: typeof cordobaProperties[0]) => {
     setSelectedProperty(property);
+  };
+
+  const handleImageLoad = (imageUrl: string) => {
+    setLoadedImages(prev => [...prev, imageUrl]);
   };
 
   const handleContactWhatsApp = (whatsappNumber: string) => {
@@ -307,6 +318,7 @@ const MapPage = () => {
                 <SelectValue placeholder="Tipo de propiedad" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="all">Sin filtrar</SelectItem>
                 <SelectItem value="flat">Departamento</SelectItem>
                 <SelectItem value="house">Casa</SelectItem>
                 <SelectItem value="loft">Loft</SelectItem>
@@ -318,6 +330,7 @@ const MapPage = () => {
                 <SelectValue placeholder="Rango de precio" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="all">Sin filtrar</SelectItem>
                 <SelectItem value="0-50000">$0 - $50.000</SelectItem>
                 <SelectItem value="50000-100000">$50.000 - $100.000</SelectItem>
                 <SelectItem value="100000+">$100.000+</SelectItem>
@@ -329,7 +342,7 @@ const MapPage = () => {
                 <SelectValue placeholder="Tipo de operación" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">En venta y en alquiler</SelectItem>
+                <SelectItem value="all">Sin filtrar</SelectItem>
                 <SelectItem value="rent">Alquiler</SelectItem>
                 <SelectItem value="sale">Venta</SelectItem>
               </SelectContent>
@@ -412,7 +425,7 @@ const MapPage = () => {
           <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-start p-4 border-b">
               <div>
-                <h2 className="text-2xl font-bold">{selectedProperty.title}</h2>
+                <h1 className="text-2xl font-bold">{selectedProperty.title}</h1>
                 <p className="text-gray-600">{selectedProperty.location}</p>
               </div>
               <button 
@@ -424,38 +437,62 @@ const MapPage = () => {
             </div>
             
             <div className="p-6">
-              <div className="grid grid-cols-2 gap-6 mb-6">
-                <div>
-                  <h3 className="font-semibold mb-2">Características</h3>
-                  <ul className="space-y-2">
-                    <li>Habitaciones: {selectedProperty.bedrooms}</li>
-                    <li>Baños: {selectedProperty.bathrooms}</li>
-                    <li>Área: {selectedProperty.area}</li>
-                    <li>Amoblado: {selectedProperty.furnished ? 'Si' : 'No'}</li>
-                    <li>Estacionamiento: {selectedProperty.parking}</li>
-                  </ul>
+              <div className="grid grid-cols-1 gap-6">
+                <div className="grid grid-cols-3 gap-4">
+                  {selectedProperty.gallery.map((imageUrl, index) => (
+                    <div 
+                      key={index}
+                      className="relative aspect-square cursor-pointer overflow-hidden rounded-lg"
+                      onClick={() => !loadedImages.includes(imageUrl) && handleImageLoad(imageUrl)}
+                    >
+                      {loadedImages.includes(imageUrl) ? (
+                        <img
+                          src={imageUrl}
+                          alt={`${selectedProperty.title} - Imagen ${index + 1}`}
+                          className="object-cover w-full h-full"
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center w-full h-full bg-gray-100">
+                          <ExternalLink className="w-6 h-6 text-gray-400" />
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Amenities</h3>
-                  <ul className="space-y-2">
-                    {selectedProperty.amenities.map((amenity, index) => (
-                      <li key={index}>{amenity}</li>
-                    ))}
-                  </ul>
+
+                <div className="grid grid-cols-2 gap-6">
+                  <div>
+                    <h3 className="font-semibold mb-2">Características</h3>
+                    <ul className="space-y-2">
+                      <li>Habitaciones: {selectedProperty.bedrooms}</li>
+                      <li>Baños: {selectedProperty.bathrooms}</li>
+                      <li>Área: {selectedProperty.area}</li>
+                      <li>Amoblado: {selectedProperty.furnished ? 'Si' : 'No'}</li>
+                      <li>Estacionamiento: {selectedProperty.parking}</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold mb-2">Amenities</h3>
+                    <ul className="space-y-2">
+                      {selectedProperty.amenities.map((amenity, index) => (
+                        <li key={index}>{amenity}</li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
-              </div>
-              
-              <div className="flex justify-between items-center">
-                <div className="text-3xl font-bold text-primary">
-                  ${selectedProperty.price.toLocaleString()}
-                  {selectedProperty.type === 'rent' && <span className="text-sm text-gray-500 ml-1">/mes</span>}
+                
+                <div className="flex justify-between items-center">
+                  <div className="text-3xl font-bold text-primary">
+                    ${selectedProperty.price.toLocaleString()}
+                    {selectedProperty.type === 'rent' && <span className="text-sm text-gray-500 ml-1">/mes</span>}
+                  </div>
+                  <Button 
+                    className="bg-[#25D366] hover:bg-[#25D366]/90 text-white"
+                    onClick={() => handleContactWhatsApp(selectedProperty.whatsapp)}
+                  >
+                    Contactar por WhatsApp
+                  </Button>
                 </div>
-                <Button 
-                  className="bg-[#25D366] hover:bg-[#25D366]/90 text-white"
-                  onClick={() => handleContactWhatsApp(selectedProperty.whatsapp)}
-                >
-                  Contactar por WhatsApp
-                </Button>
               </div>
             </div>
           </div>
