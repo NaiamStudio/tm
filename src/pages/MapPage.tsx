@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { MapComponent } from "@/components/MapComponent";
@@ -13,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 
 const cordobaProperties = [
   {
@@ -47,7 +47,6 @@ const cordobaProperties = [
     whatsapp: "+5493512345679",
     image: "/photo-1487958449943-2429e8be8625"
   },
-  // Nuevas propiedades
   {
     id: 3,
     title: "Casa Familiar en Alto Alberdi",
@@ -183,16 +182,44 @@ const ITEMS_PER_PAGE = 8;
 const MapPage = () => {
   const location = useLocation();
   const [showMap, setShowMap] = useState(true);
-  const [selectedLocation, setSelectedLocation] = useState("Córdoba");
-  const [priceRange, setPriceRange] = useState("");
-  const [accommodationType, setAccommodationType] = useState("");
-  const [listingType, setListingType] = useState("all");
+  const [selectedLocation, setSelectedLocation] = useState(location.state?.location || "");
+  const [propertyType, setPropertyType] = useState(location.state?.propertyType || "");
+  const [budget, setBudget] = useState(location.state?.budget || "");
+  const [listingType, setListingType] = useState(location.state?.listingType || "all");
   const [selectedProperty, setSelectedProperty] = useState<typeof cordobaProperties[0] | null>(null);
   const [visibleItems, setVisibleItems] = useState(ITEMS_PER_PAGE);
+  const [showLocations, setShowLocations] = useState(false);
 
   const filteredProperties = cordobaProperties.filter(property => {
-    if (listingType === "all") return true;
-    return property.type === listingType;
+    let matches = true;
+    
+    if (listingType !== "all") {
+      matches = matches && property.type === listingType;
+    }
+    
+    if (selectedLocation) {
+      matches = matches && property.location.toLowerCase().includes(selectedLocation.toLowerCase());
+    }
+    
+    if (propertyType) {
+      const propertyTypeMap = {
+        flat: "Apartamento",
+        house: "Casa",
+        loft: "Loft"
+      };
+      matches = matches && property.title.includes(propertyTypeMap[propertyType as keyof typeof propertyTypeMap]);
+    }
+    
+    if (budget) {
+      const [min, max] = budget.split("-").map(Number);
+      if (max) {
+        matches = matches && property.price >= min && property.price <= max;
+      } else {
+        matches = matches && property.price >= min;
+      }
+    }
+    
+    return matches;
   });
 
   const handlePropertySelect = (property: typeof cordobaProperties[0]) => {
@@ -202,6 +229,11 @@ const MapPage = () => {
   const handleContactWhatsApp = (whatsappNumber: string) => {
     const message = encodeURIComponent(`Hola, me interesa la propiedad en ${selectedProperty?.location}`);
     window.open(`https://wa.me/${whatsappNumber}?text=${message}`, '_blank');
+  };
+
+  const handleLocationSelect = (loc: string) => {
+    setSelectedLocation(loc);
+    setShowLocations(false);
   };
 
   const loadMore = () => {
@@ -228,40 +260,41 @@ const MapPage = () => {
       </nav>
 
       <div className="container mx-auto p-4">
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex gap-4">
-            <Select
-              value={selectedLocation}
-              onValueChange={setSelectedLocation}
-            >
-              <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="Seleccionar ubicación" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Córdoba">Córdoba</SelectItem>
-                <SelectItem value="Nueva Córdoba">Nueva Córdoba</SelectItem>
-                <SelectItem value="Güemes">Güemes</SelectItem>
-              </SelectContent>
-            </Select>
+        <div className="flex flex-col gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="relative">
+              <Input
+                placeholder="Ubicación"
+                value={selectedLocation}
+                onChange={(e) => setSelectedLocation(e.target.value)}
+                onFocus={() => setShowLocations(true)}
+                className="w-full"
+              />
+              {showLocations && (
+                <div 
+                  className="absolute top-full left-0 right-0 bg-white shadow-lg rounded-lg mt-1 z-10"
+                  onMouseLeave={() => setShowLocations(false)}
+                >
+                  {locations
+                    .filter(loc => 
+                      loc.toLowerCase().includes(selectedLocation.toLowerCase())
+                    )
+                    .map((loc, index) => (
+                      <div 
+                        key={index}
+                        className="p-2 hover:bg-gray-100 cursor-pointer"
+                        onClick={() => handleLocationSelect(loc)}
+                      >
+                        {loc}
+                      </div>
+                    ))
+                  }
+                </div>
+              )}
+            </div>
 
-            <Select value={priceRange} onValueChange={setPriceRange}>
-              <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="Precio" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="0-50000">$0 - $50.000</SelectItem>
-                <SelectItem value="50000-100000">
-                  $50.000 - $100.000
-                </SelectItem>
-                <SelectItem value="100000+">$100.000+</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select
-              value={accommodationType}
-              onValueChange={setAccommodationType}
-            >
-              <SelectTrigger className="w-[200px]">
+            <Select value={propertyType} onValueChange={setPropertyType}>
+              <SelectTrigger>
                 <SelectValue placeholder="Tipo de propiedad" />
               </SelectTrigger>
               <SelectContent>
@@ -271,19 +304,30 @@ const MapPage = () => {
               </SelectContent>
             </Select>
 
+            <Select value={budget} onValueChange={setBudget}>
+              <SelectTrigger>
+                <SelectValue placeholder="Rango de precio" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="0-50000">$0 - $50.000</SelectItem>
+                <SelectItem value="50000-100000">$50.000 - $100.000</SelectItem>
+                <SelectItem value="100000+">$100.000+</SelectItem>
+              </SelectContent>
+            </Select>
+
             <Select value={listingType} onValueChange={setListingType}>
-              <SelectTrigger className="w-[200px]">
+              <SelectTrigger>
                 <SelectValue placeholder="Tipo de operación" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Mostrar todas</SelectItem>
+                <SelectItem value="all">En venta y en alquiler</SelectItem>
                 <SelectItem value="rent">Alquiler</SelectItem>
                 <SelectItem value="sale">Venta</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 justify-end">
             <span className="text-sm text-white">Mostrar mapa</span>
             <Switch
               checked={showMap}
@@ -292,8 +336,17 @@ const MapPage = () => {
           </div>
         </div>
 
-        <div className={`grid ${showMap ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'} gap-6`}>
-          <div className={`space-y-6 ${!showMap ? 'col-span-full' : ''}`}>
+        <div className={`grid ${showMap ? 'md:grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'} gap-6`}>
+          {showMap && (
+            <div className="md:order-2 h-[calc(100vh-200px)] sticky top-24">
+              <MapComponent 
+                properties={filteredProperties}
+                onPropertySelect={handlePropertySelect}
+              />
+            </div>
+          )}
+
+          <div className={`space-y-6 ${!showMap ? 'col-span-full' : 'md:order-1'}`}>
             <div className={`grid ${showMap ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'} gap-6`}>
               {displayProperties.map((property) => (
                 <div
@@ -342,15 +395,6 @@ const MapPage = () => {
               </div>
             )}
           </div>
-
-          {showMap && (
-            <div className="h-[calc(100vh-200px)] sticky top-24">
-              <MapComponent 
-                properties={filteredProperties}
-                onPropertySelect={handlePropertySelect}
-              />
-            </div>
-          )}
         </div>
       </div>
 

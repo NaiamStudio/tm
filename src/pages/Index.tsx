@@ -12,17 +12,45 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+const locations = [
+  "Nueva Córdoba",
+  "Centro",
+  "Alberdi",
+  "Güemes",
+  "General Paz",
+  "Alta Córdoba"
+];
+
 const HomePage = () => {
   const navigate = useNavigate();
   const [location, setLocation] = useState("");
+  const [showLocations, setShowLocations] = useState(false);
   const [propertyType, setPropertyType] = useState("");
   const [budget, setBudget] = useState("");
   const [listingType, setListingType] = useState("all");
 
   const handleSearch = () => {
     navigate("/map", {
-      state: { location, propertyType, budget, listingType },
+      state: { 
+        location, 
+        propertyType, 
+        budget, 
+        listingType 
+      },
     });
+  };
+
+  const handleLocationSelect = (selectedLocation: string) => {
+    setLocation(selectedLocation);
+    setShowLocations(false);
+  };
+
+  const handleLocationInputFocus = () => {
+    setShowLocations(true);
+  };
+
+  const handleClickOutside = () => {
+    setShowLocations(false);
   };
 
   return (
@@ -42,15 +70,15 @@ const HomePage = () => {
 
       <main className="container mx-auto px-4 pt-20 pb-32">
         <div className="max-w-3xl mx-auto text-center mb-12">
-          <h1 className="text-white text-5xl font-bold mb-4 whitespace-nowrap">
-            ¿Cómo es tu próximo hogar?
+          <h1 className="text-white text-3xl md:text-5xl font-bold mb-4">
+            Terracarta
           </h1>
-          <p className="text-white/90 text-xl">
-            Disfruta de una nueva experiencia en la búsqueda de tu próximo hogar
+          <p className="text-white/90 text-lg md:text-xl">
+            El mapa de propiedades en venta y alquiler
           </p>
         </div>
 
-        <div className="bg-white rounded-xl p-2 shadow-lg max-w-4xl mx-auto">
+        <div className="bg-white rounded-xl p-2 shadow-lg max-w-4xl mx-auto relative">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
             <div className="relative">
               <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -59,18 +87,27 @@ const HomePage = () => {
                 className="pl-10"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
+                onFocus={handleLocationInputFocus}
               />
-              {location && (
-                <div className="absolute top-full left-0 right-0 bg-white shadow-lg rounded-lg mt-1 z-10">
-                  <div className="p-2 hover:bg-gray-100 cursor-pointer">
-                    Nueva Córdoba
-                  </div>
-                  <div className="p-2 hover:bg-gray-100 cursor-pointer">
-                    Centro
-                  </div>
-                  <div className="p-2 hover:bg-gray-100 cursor-pointer">
-                    Alberdi
-                  </div>
+              {showLocations && (
+                <div 
+                  className="absolute top-full left-0 right-0 bg-white shadow-lg rounded-lg mt-1 z-10"
+                  onMouseLeave={handleClickOutside}
+                >
+                  {locations
+                    .filter(loc => 
+                      loc.toLowerCase().includes(location.toLowerCase())
+                    )
+                    .map((loc, index) => (
+                      <div 
+                        key={index}
+                        className="p-2 hover:bg-gray-100 cursor-pointer"
+                        onClick={() => handleLocationSelect(loc)}
+                      >
+                        {loc}
+                      </div>
+                    ))
+                  }
                 </div>
               )}
             </div>
