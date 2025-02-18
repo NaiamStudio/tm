@@ -14,6 +14,15 @@ import { Switch } from "@/components/ui/switch";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
+const locations = [
+  "Nueva Córdoba",
+  "Centro",
+  "Alberdi",
+  "Güemes",
+  "General Paz",
+  "Alta Córdoba"
+];
+
 const cordobaProperties = [
   {
     id: 1,
