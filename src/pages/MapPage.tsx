@@ -2,17 +2,10 @@ import { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { MapComponent } from "@/components/MapComponent";
 import { Button } from "@/components/ui/button";
-import { Search, Heart, X, ExternalLink } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { PropertyFilters } from "@/components/PropertyFilters";
+import { PropertyCard } from "@/components/PropertyCard";
+import { PropertyDetails } from "@/components/PropertyDetails";
 
 const locations = [
   "Sin filtrar",
@@ -281,73 +274,19 @@ const MapPage = () => {
 
       <div className="container mx-auto p-4">
         <div className="flex flex-col gap-4 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="relative">
-              <Input
-                placeholder="Ubicación"
-                value={selectedLocation}
-                onChange={(e) => setSelectedLocation(e.target.value)}
-                onFocus={() => setShowLocations(true)}
-                className="w-full"
-              />
-              {showLocations && (
-                <div 
-                  className="absolute top-full left-0 right-0 bg-white shadow-lg rounded-lg mt-1 z-10"
-                  onMouseLeave={() => setShowLocations(false)}
-                >
-                  {locations
-                    .filter(loc => 
-                      loc.toLowerCase().includes(selectedLocation.toLowerCase())
-                    )
-                    .map((loc, index) => (
-                      <div 
-                        key={index}
-                        className="p-2 hover:bg-gray-100 cursor-pointer"
-                        onClick={() => handleLocationSelect(loc)}
-                      >
-                        {loc}
-                      </div>
-                    ))
-                  }
-                </div>
-              )}
-            </div>
-
-            <Select value={propertyType} onValueChange={setPropertyType}>
-              <SelectTrigger>
-                <SelectValue placeholder="Tipo de propiedad" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Sin filtrar</SelectItem>
-                <SelectItem value="flat">Departamento</SelectItem>
-                <SelectItem value="house">Casa</SelectItem>
-                <SelectItem value="loft">Loft</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={budget} onValueChange={setBudget}>
-              <SelectTrigger>
-                <SelectValue placeholder="Rango de precio" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Sin filtrar</SelectItem>
-                <SelectItem value="0-50000">$0 - $50.000</SelectItem>
-                <SelectItem value="50000-100000">$50.000 - $100.000</SelectItem>
-                <SelectItem value="100000+">$100.000+</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={listingType} onValueChange={setListingType}>
-              <SelectTrigger>
-                <SelectValue placeholder="Tipo de operación" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Sin filtrar</SelectItem>
-                <SelectItem value="rent">Alquiler</SelectItem>
-                <SelectItem value="sale">Venta</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <PropertyFilters 
+            selectedLocation={selectedLocation}
+            setSelectedLocation={setSelectedLocation}
+            propertyType={propertyType}
+            setPropertyType={setPropertyType}
+            budget={budget}
+            setBudget={setBudget}
+            listingType={listingType}
+            setListingType={setListingType}
+            showLocations={showLocations}
+            setShowLocations={setShowLocations}
+            handleLocationSelect={handleLocationSelect}
+          />
 
           <div className="flex items-center gap-2 justify-end">
             <span className="text-sm text-white">Mostrar mapa</span>
@@ -371,39 +310,11 @@ const MapPage = () => {
           <div className={`space-y-6 ${!showMap ? 'col-span-full' : 'md:order-1'} relative z-0`}>
             <div className={`grid ${showMap ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'} gap-6`}>
               {displayProperties.map((property) => (
-                <div
+                <PropertyCard
                   key={property.id}
-                  className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
-                  onClick={() => handlePropertySelect(property)}
-                >
-                  <div className="relative h-48">
-                    <img
-                      src={property.image}
-                      alt={property.title}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className={`absolute inset-0 ${
-                      property.type === 'rent' ? 'bg-[#7FFFD4]/20' : 'bg-[#FEF7CD]/20'
-                    }`} />
-                  </div>
-                  <div className="p-4">
-                    <div className="inline-block px-2 py-1 rounded text-xs font-medium bg-[#7FFFD4]/10 text-[#7FFFD4] mb-2">
-                      {property.type === 'rent' ? 'ALQUILER' : 'VENTA'}
-                    </div>
-                    <h3 className="text-lg font-semibold mb-2">
-                      {property.title}
-                    </h3>
-                    <p className="text-gray-600 mb-4">{property.location}</p>
-                    <div className="flex justify-between items-center">
-                      <div className="text-2xl font-bold text-[#7FFFD4]">
-                        ${property.price.toLocaleString()}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {property.type === 'rent' ? '/mes' : ''}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                  property={property}
+                  onClick={handlePropertySelect}
+                />
               ))}
             </div>
             {visibleItems < filteredProperties.length && (
@@ -421,82 +332,13 @@ const MapPage = () => {
       </div>
 
       {selectedProperty && (
-        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-start p-4 border-b">
-              <div>
-                <h1 className="text-2xl font-bold">{selectedProperty.title}</h1>
-                <p className="text-gray-600">{selectedProperty.location}</p>
-              </div>
-              <button 
-                onClick={() => setSelectedProperty(null)}
-                className="p-2 hover:bg-gray-100 rounded-full"
-              >
-                <X className="h-6 w-6" />
-              </button>
-            </div>
-            
-            <div className="p-6">
-              <div className="grid grid-cols-1 gap-6">
-                <div className="grid grid-cols-3 gap-4">
-                  {selectedProperty.gallery.map((imageUrl, index) => (
-                    <div 
-                      key={index}
-                      className="relative aspect-square cursor-pointer overflow-hidden rounded-lg"
-                      onClick={() => !loadedImages.includes(imageUrl) && handleImageLoad(imageUrl)}
-                    >
-                      {loadedImages.includes(imageUrl) ? (
-                        <img
-                          src={imageUrl}
-                          alt={`${selectedProperty.title} - Imagen ${index + 1}`}
-                          className="object-cover w-full h-full"
-                        />
-                      ) : (
-                        <div className="flex items-center justify-center w-full h-full bg-gray-100">
-                          <ExternalLink className="w-6 h-6 text-gray-400" />
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-
-                <div className="grid grid-cols-2 gap-6">
-                  <div>
-                    <h3 className="font-semibold mb-2">Características</h3>
-                    <ul className="space-y-2">
-                      <li>Habitaciones: {selectedProperty.bedrooms}</li>
-                      <li>Baños: {selectedProperty.bathrooms}</li>
-                      <li>Área: {selectedProperty.area}</li>
-                      <li>Amoblado: {selectedProperty.furnished ? 'Si' : 'No'}</li>
-                      <li>Estacionamiento: {selectedProperty.parking}</li>
-                    </ul>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold mb-2">Amenities</h3>
-                    <ul className="space-y-2">
-                      {selectedProperty.amenities.map((amenity, index) => (
-                        <li key={index}>{amenity}</li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-                
-                <div className="flex justify-between items-center">
-                  <div className="text-3xl font-bold text-primary">
-                    ${selectedProperty.price.toLocaleString()}
-                    {selectedProperty.type === 'rent' && <span className="text-sm text-gray-500 ml-1">/mes</span>}
-                  </div>
-                  <Button 
-                    className="bg-[#25D366] hover:bg-[#25D366]/90 text-white"
-                    onClick={() => handleContactWhatsApp(selectedProperty.whatsapp)}
-                  >
-                    Contactar por WhatsApp
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <PropertyDetails
+          property={selectedProperty}
+          onClose={() => setSelectedProperty(null)}
+          loadedImages={loadedImages}
+          onImageLoad={handleImageLoad}
+          onWhatsAppClick={handleContactWhatsApp}
+        />
       )}
 
       <footer className="container mx-auto p-4 text-center text-white">
