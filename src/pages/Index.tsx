@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,9 +13,15 @@ const Index = () => {
   }, []);
 
   const checkUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      navigate("/dashboard");
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      console.log("Current user:", user); // Debug log
+      if (user) {
+        console.log("Redirecting to dashboard..."); // Debug log
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      console.error("Error checking user:", error); // Debug log
     }
   };
 
