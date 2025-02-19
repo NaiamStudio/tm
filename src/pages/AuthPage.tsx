@@ -24,7 +24,10 @@ const AuthPage = () => {
           email,
           password,
           options: {
-            emailRedirectTo: 'https://tm.lovable.app/verify'
+            emailRedirectTo: `${window.location.origin}/verify`,
+            data: {
+              email_confirm: true
+            }
           }
         });
 
@@ -40,7 +43,7 @@ const AuthPage = () => {
         const { error } = await supabase.auth.signInWithOtp({
           email,
           options: {
-            emailRedirectTo: 'https://tm.lovable.app/verify'
+            emailRedirectTo: `${window.location.origin}/verify`
           }
         });
 
@@ -52,7 +55,7 @@ const AuthPage = () => {
         });
       } else if (mode === "recovery") {
         const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: 'https://tm.lovable.app/verify'
+          redirectTo: `${window.location.origin}/verify`
         });
 
         if (resetError) throw resetError;
