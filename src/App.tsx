@@ -9,10 +9,8 @@ import Index from "./pages/Index";
 import MapPage from "./pages/MapPage";
 import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/AuthPage";
+import UserPage from "./pages/UserPage";
 import VerifyPage from "./pages/VerifyPage";
-import Dashboard from "./pages/Dashboard";
-import AdminDashboard from "./pages/AdminDashboard";
-import PublisherDashboard from "./pages/PublisherDashboard";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 const queryClient = new QueryClient();
@@ -30,9 +28,7 @@ const App = () => (
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
           <Route path="/verify" element={<VerifyPage />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/dashboard/zadmin" element={<AdminDashboard />} />
-          <Route path="/dashboard/publisher" element={<PublisherDashboard />} />
+          <Route path="/user/:username" element={<UserPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

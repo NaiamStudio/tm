@@ -73,14 +73,24 @@ const AuthPage = () => {
         });
       } else {
         // Login mode
-        const { error: signInError } = await supabase.auth.signInWithPassword({
+        const { data: { user }, error: signInError } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
 
         if (signInError) throw signInError;
 
-        navigate("/dashboard");
+        if (user) {
+          const { data: profile } = await supabase
+            .from('user_profiles')
+            .select('username')
+            .eq('id', user.id)
+            .single();
+
+          if (profile?.username) {
+            navigate(`/user/${profile.username}`);
+          }
+        }
       }
     } catch (error: any) {
       console.error("Auth error:", error);
