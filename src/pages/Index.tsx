@@ -1,191 +1,71 @@
-
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { Search, MapPin, Home } from "lucide-react";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Link } from "react-router-dom";
 
-const locations = [
-  "Sin filtrar",
-  "Nueva Córdoba, Ciudad de Córdoba, Córdoba",
-  "Centro, Ciudad de Córdoba, Córdoba",
-  "Alberdi, Ciudad de Córdoba, Córdoba",
-  "Güemes, Ciudad de Córdoba, Córdoba",
-  "General Paz, Ciudad de Córdoba, Córdoba",
-  "Alta Córdoba, Ciudad de Córdoba, Córdoba",
-  "Villa Allende, Córdoba",
-  "Mendiolaza, Córdoba",
-  "Saldán, Córdoba"
-];
-
-const HomePage = () => {
+const Index = () => {
   const navigate = useNavigate();
-  const [location, setLocation] = useState("");
-  const [showLocations, setShowLocations] = useState(false);
-  const [propertyType, setPropertyType] = useState("");
-  const [budget, setBudget] = useState("");
-  const [listingType, setListingType] = useState("all");
 
-  const handleSearch = () => {
-    navigate("/explore", {
-      state: { 
-        location, 
-        propertyType, 
-        budget, 
-        listingType 
-      },
-    });
-  };
+  useEffect(() => {
+    checkUser();
+  }, []);
 
-  const handleLocationSelect = (selectedLocation: string) => {
-    setLocation(selectedLocation);
-    setShowLocations(false);
-  };
-
-  const handleLocationInputFocus = () => {
-    setShowLocations(true);
-  };
-
-  const handleClickOutside = () => {
-    setShowLocations(false);
+  const checkUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      navigate("/dashboard");
+    }
   };
 
   return (
     <div className="min-h-screen bg-black">
-      <nav className="container mx-auto p-4 flex justify-between items-center">
-        <Link to="/" className="text-white text-2xl font-bold">
-          Terramapa
-        </Link>
-        <div className="flex gap-4">
-          <Link to="/explore">
-            <Button variant="ghost" className="text-white">
-              Mapa
-            </Button>
-          </Link>
+      <nav className="border-b border-white/10 bg-black/50 backdrop-blur-xl">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
+            <Link to="/" className="text-2xl font-bold text-white">
+              Terramapa
+            </Link>
+            <div className="flex items-center space-x-4">
+              <Link to="/explore">
+                <Button variant="ghost" className="text-white">
+                  Explorar
+                </Button>
+              </Link>
+              <Link to="/auth">
+                <Button className="bg-[#7FFFD4] text-black hover:bg-[#7FFFD4]/90">
+                  Iniciar sesión
+                </Button>
+              </Link>
+            </div>
+          </div>
         </div>
       </nav>
 
-      <main className="container mx-auto px-4 pt-20 pb-32">
-        <div className="max-w-3xl mx-auto text-center mb-12">
-          <h1 className="text-white text-3xl md:text-5xl font-bold mb-4">
-            Terramapa
+      <main className="container mx-auto px-4 py-16">
+        <div className="max-w-3xl mx-auto text-center">
+          <h1 className="text-5xl font-bold text-white mb-6">
+            Encuentra tu próxima propiedad
           </h1>
-          <p className="text-white/90 text-lg md:text-xl">
-            El mapa de propiedades en venta y alquiler
+          <p className="text-xl text-gray-400 mb-8">
+            Explora propiedades en venta y renta en tu área de interés
           </p>
-        </div>
-
-        <div className="bg-white rounded-xl p-2 shadow-lg max-w-4xl mx-auto relative">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
-            <div className="relative">
-              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <Input
-                placeholder="Ubicación"
-                className="pl-10"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                onFocus={handleLocationInputFocus}
-              />
-              {showLocations && (
-                <div 
-                  className="absolute top-full left-0 right-0 bg-white shadow-lg rounded-lg mt-1 z-10"
-                  onMouseLeave={handleClickOutside}
-                >
-                  {locations
-                    .filter(loc => 
-                      loc.toLowerCase().includes(location.toLowerCase())
-                    )
-                    .map((loc, index) => (
-                      <div 
-                        key={index}
-                        className="p-2 hover:bg-gray-100 cursor-pointer"
-                        onClick={() => handleLocationSelect(loc)}
-                      >
-                        {loc}
-                      </div>
-                    ))
-                  }
-                </div>
-              )}
-            </div>
-
-            <div className="relative">
-              <Home className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <Select
-                value={propertyType}
-                onValueChange={setPropertyType}
-              >
-                <SelectTrigger className="pl-10">
-                  <SelectValue placeholder="Tipo de propiedad" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Sin filtrar</SelectItem>
-                  <SelectItem value="flat">Departamento</SelectItem>
-                  <SelectItem value="house">Casa</SelectItem>
-                  <SelectItem value="loft">Loft</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Select value={budget} onValueChange={setBudget}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Rango de precio" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Sin filtrar</SelectItem>
-                  <SelectItem value="0-50000">$0 - $50.000</SelectItem>
-                  <SelectItem value="50000-100000">$50.000 - $100.000</SelectItem>
-                  <SelectItem value="100000+">$100.000+</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Select value={listingType} onValueChange={setListingType}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Tipo de operación" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Sin filtrar</SelectItem>
-                  <SelectItem value="rent">Alquiler</SelectItem>
-                  <SelectItem value="sale">Venta</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <Button
-              className="bg-[#7FFFD4] hover:bg-[#7FFFD4]/90 text-black"
-              onClick={handleSearch}
-            >
-              <Search className="mr-2 h-4 w-4" /> Explorar
-            </Button>
+          <div className="flex justify-center gap-4">
+            <Link to="/explore">
+              <Button className="bg-[#7FFFD4] text-black hover:bg-[#7FFFD4]/90 px-8 py-6 text-lg">
+                Comenzar a explorar
+              </Button>
+            </Link>
+            <Link to="/auth">
+              <Button variant="outline" className="text-white border-white/20 px-8 py-6 text-lg">
+                Crear cuenta
+              </Button>
+            </Link>
           </div>
         </div>
       </main>
-
-      <footer className="fixed bottom-0 w-full bg-black border-t border-white/10 py-4">
-        <p className="text-center text-white">
-          © Terramapa 2025 - Desarrollado por{" "}
-          <a
-            href="https://naiam.studio"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[#7FFFD4] hover:text-[#7FFFD4]/80"
-          >
-            Naiam
-          </a>
-        </p>
-      </footer>
     </div>
   );
 };
 
-export default HomePage;
+export default Index;
