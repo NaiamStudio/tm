@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -24,40 +23,47 @@ const Dashboard = () => {
   const [newUsername, setNewUsername] = useState("");
   const [canChangeUsername, setCanChangeUsername] = useState(false);
   const [isEditingUsername, setIsEditingUsername] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      console.log("Checking auth, user:", user);
-      if (!user) {
-        console.log("No user found, redirecting to /auth");
+      try {
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        
+        if (authError) {
+          console.error("Error de autenticación:", authError);
+          navigate("/auth");
+          return;
+        }
+
+        if (!user) {
+          console.log("No hay usuario autenticado");
+          navigate("/auth");
+          return;
+        }
+
+        await fetchUserProfile(user.id);
+      } catch (error) {
+        console.error("Error en checkAuth:", error);
         navigate("/auth");
-        return;
       }
-      checkUser();
     };
 
     checkAuth();
   }, [navigate]);
 
-  const checkUser = async () => {
+  const fetchUserProfile = async (userId: string) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        console.log("No user found in checkUser");
-        navigate("/auth");
-        return;
-      }
+      setIsLoading(true);
 
-      console.log("Fetching user profile for:", user.id);
       const { data: profile, error } = await supabase
         .from("user_profiles")
-        .select("username, useremail, is_admin, is_prop_publisher")
-        .eq("id", user.id)
+        .select("*")
+        .eq("id", userId)
         .maybeSingle();
 
       if (error) {
-        console.error("Error fetching profile:", error);
+        console.error("Error al obtener perfil:", error);
         toast({
           title: "Error",
           description: "No se pudo cargar la información del usuario",
@@ -66,98 +72,155 @@ const Dashboard = () => {
         return;
       }
 
-      if (profile) {
-        console.log("Profile found:", profile);
-        setUsername(profile.username);
-        setEmail(profile.useremail || user.email || "");
-        setIsAdmin(profile.is_admin || false);
-        setIsPublisher(profile.is_prop_publisher || false);
-        checkUsernameChangeEligibility(user.id);
-      } else {
-        console.log("No profile found for user:", user.id);
+      if (!profile) {
+        console.error("No se encontró el perfil del usuario");
         toast({
           title: "Error",
           description: "No se encontró el perfil del usuario",
           variant: "destructive",
         });
+        return;
       }
+
+      // Actualizar estado con los datos del perfil
+      setUsername(profile.username || "");
+      setEmail(profile.useremail || "");
+      setIsAdmin(profile.is_admin || false);
+      setIsPublisher(profile.is_prop_publisher || false);
+
+      // Verificar elegibilidad para cambio de username
+      await checkUsernameChangeEligibility(userId);
+
     } catch (error) {
-      console.error("Error in checkUser:", error);
+      console.error("Error al procesar perfil:", error);
       toast({
         title: "Error",
-        description: "No se pudieron cargar los datos del usuario",
+        description: "Ocurrió un error al cargar los datos del usuario",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const checkUsernameChangeEligibility = async (userId: string) => {
-    const { data, error } = await supabase.rpc('can_change_username', {
-      user_id: userId
-    });
+    try {
+      const { data, error } = await supabase.rpc('can_change_username', {
+        user_id: userId
+      });
 
-    if (error) {
-      console.error("Error checking username change eligibility:", error);
-      return;
+      if (error) {
+        console.error("Error al verificar elegibilidad de cambio de username:", error);
+        return;
+      }
+
+      setCanChangeUsername(data);
+    } catch (error) {
+      console.error("Error en checkUsernameChangeEligibility:", error);
     }
-
-    setCanChangeUsername(data);
   };
 
   const handleUsernameChange = async () => {
-    if (!newUsername || newUsername.length < 5 || newUsername.length > 12) {
+    try {
+      if (!newUsername || newUsername.length < 5 || newUsername.length > 12) {
+        toast({
+          title: "Error",
+          description: "El username debe tener entre 5 y 12 caracteres",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const usernameRegex = /^[a-zA-Z0-9][a-zA-Z0-9._]*[a-zA-Z0-9]$/;
+      if (!usernameRegex.test(newUsername)) {
+        toast({
+          title: "Error",
+          description: "El username solo puede contener letras, números, puntos y guiones bajos",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "No se pudo verificar la autenticación",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const { error } = await supabase
+        .from("user_profiles")
+        .update({ 
+          username: newUsername,
+          last_username_change: new Date().toISOString()
+        })
+        .eq("id", user.id);
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "¡Éxito!",
+        description: "Username actualizado correctamente",
+      });
+
+      setUsername(newUsername);
+      setNewUsername("");
+      setIsEditingUsername(false);
+      setCanChangeUsername(false);
+    } catch (error) {
+      console.error("Error al cambiar username:", error);
       toast({
         title: "Error",
-        description: "El username debe tener entre 5 y 12 caracteres",
+        description: "No se pudo actualizar el username",
         variant: "destructive",
       });
-      return;
     }
-
-    const usernameRegex = /^[a-zA-Z0-9][a-zA-Z0-9._]*[a-zA-Z0-9]$/;
-    if (!usernameRegex.test(newUsername)) {
-      toast({
-        title: "Error",
-        description: "El username solo puede contener letras, números, puntos y guiones bajos",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const { error } = await supabase
-      .from("user_profiles")
-      .update({ 
-        username: newUsername,
-        last_username_change: new Date().toISOString()
-      })
-      .eq("username", username);
-
-    if (error) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-      return;
-    }
-
-    toast({
-      title: "Username actualizado",
-      description: "Tu username ha sido actualizado correctamente",
-    });
-
-    setUsername(newUsername);
-    setNewUsername("");
-    setIsEditingUsername(false);
-    setCanChangeUsername(false);
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/auth");
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error("Error al cerrar sesión:", error);
+        toast({
+          title: "Error",
+          description: "No se pudo cerrar la sesión",
+          variant: "destructive",
+        });
+        return;
+      }
+      navigate("/auth");
+    } catch (error) {
+      console.error("Error en handleLogout:", error);
+      toast({
+        title: "Error",
+        description: "Ocurrió un error al cerrar sesión",
+        variant: "destructive",
+      });
+    }
   };
 
-  // Ejemplo de noticias para el carrusel
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-semibold mb-2">Cargando...</h2>
+          <p className="text-gray-400">Por favor espera mientras cargamos tus datos</p>
+        </div>
+      </div>
+    );
+  }
+
   const news = [
     {
       id: 1,
