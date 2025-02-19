@@ -20,6 +20,18 @@ const AuthPage = () => {
 
     try {
       if (mode === "signup") {
+        // Primero verificamos si existe el usuario y su estado
+        const { data: existingUser } = await supabase.auth.admin.listUsers({
+          filters: {
+            email: email
+          }
+        });
+
+        // Si existe pero no está confirmado, lo eliminamos para permitir un nuevo registro
+        if (existingUser?.users?.[0] && !existingUser.users[0].email_confirmed_at) {
+          await supabase.auth.admin.deleteUser(existingUser.users[0].id);
+        }
+
         const { data, error: signUpError } = await supabase.auth.signUp({
           email,
           password,
@@ -32,11 +44,24 @@ const AuthPage = () => {
 
         if (data?.user) {
           toast({
-            title: "Registro exitoso",
-            description: "Por favor, verifica tu email para completar el registro.",
+            title: "Registro iniciado",
+            description: "Por favor, verifica tu email para completar el registro. Revisa también tu carpeta de spam.",
           });
         }
       } else if (mode === "magic-link") {
+        // Verificar que el usuario exista y esté confirmado
+        const { data: { users } } = await supabase.auth.admin.listUsers({
+          filters: {
+            email: email
+          }
+        });
+
+        const userExists = users?.[0]?.email_confirmed_at;
+        
+        if (!userExists) {
+          throw new Error("Este email no está registrado o no ha sido confirmado.");
+        }
+
         const { error } = await supabase.auth.signInWithOtp({
           email,
           options: {
@@ -51,6 +76,19 @@ const AuthPage = () => {
           description: "Por favor, revisa tu email para iniciar sesión.",
         });
       } else if (mode === "recovery") {
+        // Verificar que el usuario exista y esté confirmado
+        const { data: { users } } = await supabase.auth.admin.listUsers({
+          filters: {
+            email: email
+          }
+        });
+
+        const userExists = users?.[0]?.email_confirmed_at;
+        
+        if (!userExists) {
+          throw new Error("Este email no está registrado o no ha sido confirmado.");
+        }
+
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
           redirectTo: `${window.location.origin}/auth`
         });
