@@ -293,7 +293,7 @@ const MapPage = () => {
             Terramapa
           </Link>
           <div className="flex gap-4">
-            <Link to="/map">
+            <Link to="/explore">
               <Button variant="ghost" className="text-white">
                 Mapa
               </Button>

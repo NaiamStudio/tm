@@ -34,7 +34,7 @@ const HomePage = () => {
   const [listingType, setListingType] = useState("all");
 
   const handleSearch = () => {
-    navigate("/map", {
+    navigate("/explore", {
       state: { 
         location, 
         propertyType, 
@@ -64,7 +64,7 @@ const HomePage = () => {
           Terramapa
         </Link>
         <div className="flex gap-4">
-          <Link to="/map">
+          <Link to="/explore">
             <Button variant="ghost" className="text-white">
               Mapa
             </Button>
