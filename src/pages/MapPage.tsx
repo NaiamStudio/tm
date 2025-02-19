@@ -290,7 +290,7 @@ const MapPage = () => {
       <nav className="border-b border-white/10">
         <div className="container mx-auto p-4 flex justify-between items-center">
           <Link to="/" className="text-white text-2xl font-bold">
-            Terracarta
+            Terramapa
           </Link>
           <div className="flex gap-4">
             <Link to="/map">
@@ -387,7 +387,7 @@ const MapPage = () => {
 
       <footer className="container mx-auto p-4 text-center text-white">
         <p>
-          2025 Terracarta - Desarrollado por{" "}
+          2025 Terramapa - Desarrollado por{" "}
           <a
             href="https://naiam.studio"
             target="_blank"

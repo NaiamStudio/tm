@@ -29,7 +29,7 @@ export const TermsAndConditions = () => {
           <div className="prose prose-sm max-w-none mb-6">
             <h3>1. Aceptación de los Términos</h3>
             <p>
-              Al acceder y utilizar Terracarta, usted acepta estos términos y condiciones en su totalidad.
+              Al acceder y utilizar Terramapa, usted acepta estos términos y condiciones en su totalidad.
               Si no está de acuerdo con estos términos, por favor, no utilice este sitio.
             </p>
 
