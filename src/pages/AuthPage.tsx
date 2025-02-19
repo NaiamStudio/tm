@@ -34,7 +34,7 @@ const AuthPage = () => {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/auth`
+            emailRedirectTo: 'https://tm.lovable.app/verify'
           }
         });
 
@@ -50,7 +50,7 @@ const AuthPage = () => {
         const { data, error } = await supabase.auth.signInWithOtp({
           email,
           options: {
-            emailRedirectTo: `${window.location.origin}/auth`
+            emailRedirectTo: 'https://tm.lovable.app/verify'
           }
         });
 
@@ -75,7 +75,7 @@ const AuthPage = () => {
         // Si no hay error de usuario no encontrado, procedemos con la recuperación
         if (error && error.message.includes("Invalid login credentials")) {
           const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: `${window.location.origin}/auth`
+            redirectTo: 'https://tm.lovable.app/verify'
           });
 
           if (resetError) throw resetError;
