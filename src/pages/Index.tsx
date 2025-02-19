@@ -61,7 +61,7 @@ const HomePage = () => {
     <div className="min-h-screen bg-black">
       <nav className="container mx-auto p-4 flex justify-between items-center">
         <Link to="/" className="text-white text-2xl font-bold">
-          Terracarta
+          Terramapa
         </Link>
         <div className="flex gap-4">
           <Link to="/map">
@@ -75,7 +75,7 @@ const HomePage = () => {
       <main className="container mx-auto px-4 pt-20 pb-32">
         <div className="max-w-3xl mx-auto text-center mb-12">
           <h1 className="text-white text-3xl md:text-5xl font-bold mb-4">
-            Terracarta
+            Terramapa
           </h1>
           <p className="text-white/90 text-lg md:text-xl">
             El mapa de propiedades en venta y alquiler
@@ -165,7 +165,7 @@ const HomePage = () => {
               className="bg-[#7FFFD4] hover:bg-[#7FFFD4]/90 text-black"
               onClick={handleSearch}
             >
-              <Search className="mr-2 h-4 w-4" /> Buscar
+              <Search className="mr-2 h-4 w-4" /> Explorar
             </Button>
           </div>
         </div>
@@ -173,14 +173,14 @@ const HomePage = () => {
 
       <footer className="fixed bottom-0 w-full bg-black border-t border-white/10 py-4">
         <p className="text-center text-white">
-          2025 Terracarta - Desarrollado por{" "}
+          © Terramapa 2025 - Desarrollado por{" "}
           <a
             href="https://naiam.studio"
             target="_blank"
             rel="noopener noreferrer"
             className="text-[#7FFFD4] hover:text-[#7FFFD4]/80"
           >
-            naiam
+            Naiam
           </a>
         </p>
       </footer>
