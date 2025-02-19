@@ -126,6 +126,8 @@ export type Database = {
           is_prop_publisher: boolean | null
           last_auth_change: string | null
           last_login: string | null
+          last_username_change: string | null
+          useremail: string
           username: string
         }
         Insert: {
@@ -135,6 +137,8 @@ export type Database = {
           is_prop_publisher?: boolean | null
           last_auth_change?: string | null
           last_login?: string | null
+          last_username_change?: string | null
+          useremail?: string
           username: string
         }
         Update: {
@@ -144,6 +148,8 @@ export type Database = {
           is_prop_publisher?: boolean | null
           last_auth_change?: string | null
           last_login?: string | null
+          last_username_change?: string | null
+          useremail?: string
           username?: string
         }
         Relationships: []
@@ -153,7 +159,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      can_change_username: {
+        Args: {
+          user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       currency_type: "USD" | "ARS"

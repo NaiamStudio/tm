@@ -11,12 +11,19 @@ import {
 } from "@/components/ui/carousel";
 import { supabase } from "@/integrations/supabase/client";
 import { LayoutDashboard, MapPin, LogOut } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
   const [isPublisher, setIsPublisher] = useState(false);
+  const [newUsername, setNewUsername] = useState("");
+  const [canChangeUsername, setCanChangeUsername] = useState(false);
+  const [isEditingUsername, setIsEditingUsername] = useState(false);
 
   useEffect(() => {
     checkUser();
@@ -31,15 +38,78 @@ const Dashboard = () => {
 
     const { data: profile } = await supabase
       .from("user_profiles")
-      .select("username, is_admin, is_prop_publisher")
+      .select("username, useremail, is_admin, is_prop_publisher")
       .eq("id", user.id)
       .single();
 
     if (profile) {
-      setUsername(profile.username || user.email || "Usuario");
+      setUsername(profile.username);
+      setEmail(profile.useremail || user.email || "");
       setIsAdmin(profile.is_admin || false);
       setIsPublisher(profile.is_prop_publisher || false);
+      checkUsernameChangeEligibility(user.id);
     }
+  };
+
+  const checkUsernameChangeEligibility = async (userId: string) => {
+    const { data, error } = await supabase.rpc('can_change_username', {
+      user_id: userId
+    });
+
+    if (error) {
+      console.error("Error checking username change eligibility:", error);
+      return;
+    }
+
+    setCanChangeUsername(data);
+  };
+
+  const handleUsernameChange = async () => {
+    if (!newUsername || newUsername.length < 5 || newUsername.length > 12) {
+      toast({
+        title: "Error",
+        description: "El username debe tener entre 5 y 12 caracteres",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const usernameRegex = /^[a-zA-Z0-9][a-zA-Z0-9._]*[a-zA-Z0-9]$/;
+    if (!usernameRegex.test(newUsername)) {
+      toast({
+        title: "Error",
+        description: "El username solo puede contener letras, números, puntos y guiones bajos",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const { error } = await supabase
+      .from("user_profiles")
+      .update({ 
+        username: newUsername,
+        last_username_change: new Date().toISOString()
+      })
+      .eq("username", username);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Username actualizado",
+      description: "Tu username ha sido actualizado correctamente",
+    });
+
+    setUsername(newUsername);
+    setNewUsername("");
+    setIsEditingUsername(false);
+    setCanChangeUsername(false);
   };
 
   const handleLogout = async () => {
@@ -112,13 +182,60 @@ const Dashboard = () => {
       </nav>
 
       <main className="container mx-auto px-4 py-8">
-        <div className="mb-12 text-center">
-          <h1 className="text-4xl font-bold mb-4">
-            ¡Bienvenido, {username}!
-          </h1>
-          <p className="text-gray-400">
-            Este es tu panel de control personal de Terramapa
-          </p>
+        <div className="mb-12">
+          <div className="max-w-2xl mx-auto bg-white/5 p-6 rounded-lg">
+            <h1 className="text-4xl font-bold mb-4 text-center">
+              ¡Bienvenido, {username}!
+            </h1>
+            <div className="space-y-4">
+              <div>
+                <p className="text-gray-400">Email:</p>
+                <p className="text-white">{email}</p>
+              </div>
+              <div>
+                <p className="text-gray-400">Username:</p>
+                {isEditingUsername ? (
+                  <div className="flex gap-2">
+                    <Input
+                      value={newUsername}
+                      onChange={(e) => setNewUsername(e.target.value)}
+                      placeholder="Nuevo username"
+                      className="bg-white/10 border-white/20 text-white"
+                    />
+                    <Button 
+                      onClick={handleUsernameChange}
+                      disabled={!canChangeUsername}
+                    >
+                      Guardar
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      onClick={() => setIsEditingUsername(false)}
+                    >
+                      Cancelar
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2 items-center">
+                    <p className="text-white">{username}</p>
+                    {canChangeUsername && (
+                      <Button 
+                        variant="ghost" 
+                        onClick={() => setIsEditingUsername(true)}
+                      >
+                        Editar
+                      </Button>
+                    )}
+                  </div>
+                )}
+                {!canChangeUsername && (
+                  <p className="text-sm text-gray-500">
+                    Podrás cambiar tu username nuevamente en 9 días desde el último cambio
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="max-w-4xl mx-auto">

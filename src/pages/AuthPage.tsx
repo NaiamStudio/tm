@@ -33,6 +33,13 @@ const AuthPage = () => {
         if (signUpError) throw signUpError;
 
         if (data?.user) {
+          const { error: profileError } = await supabase
+            .from('user_profiles')
+            .update({ useremail: email })
+            .eq('id', data.user.id);
+
+          if (profileError) throw profileError;
+
           toast({
             title: "Cuenta creada",
             description: "Por favor, revisa tu correo. Se ha enviado un nuevo mensaje de confirmación.",
@@ -72,6 +79,13 @@ const AuthPage = () => {
         if (signInError) throw signInError;
 
         if (data?.user) {
+          const { error: profileError } = await supabase
+            .from('user_profiles')
+            .update({ useremail: email })
+            .eq('id', data.user.id);
+
+          if (profileError) throw profileError;
+
           toast({
             title: "Inicio de sesión exitoso",
             description: "Bienvenido de vuelta!",
