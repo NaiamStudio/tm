@@ -9,7 +9,145 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      prop_publishers: {
+        Row: {
+          current_plan: string | null
+          expire_points_date: string | null
+          id: string
+          plan_start_date: string | null
+          points_amount: number | null
+          r_number: string | null
+          user_id: string | null
+        }
+        Insert: {
+          current_plan?: string | null
+          expire_points_date?: string | null
+          id?: string
+          plan_start_date?: string | null
+          points_amount?: number | null
+          r_number?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          current_plan?: string | null
+          expire_points_date?: string | null
+          id?: string
+          plan_start_date?: string | null
+          points_amount?: number | null
+          r_number?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prop_publishers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      properties: {
+        Row: {
+          bathrooms: number | null
+          coordinates: unknown
+          cover_image: string
+          created_at: string | null
+          currency: Database["public"]["Enums"]["currency_type"]
+          galleries: number | null
+          is_published: boolean | null
+          location_city: string
+          location_neighborhood: string
+          location_province: string
+          m2_total: number | null
+          price: number | null
+          prop_id: string
+          prop_publisher_id: string | null
+          property_images: string[]
+          rooms: number | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          bathrooms?: number | null
+          coordinates: unknown
+          cover_image: string
+          created_at?: string | null
+          currency: Database["public"]["Enums"]["currency_type"]
+          galleries?: number | null
+          is_published?: boolean | null
+          location_city: string
+          location_neighborhood: string
+          location_province: string
+          m2_total?: number | null
+          price?: number | null
+          prop_id?: string
+          prop_publisher_id?: string | null
+          property_images: string[]
+          rooms?: number | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          bathrooms?: number | null
+          coordinates?: unknown
+          cover_image?: string
+          created_at?: string | null
+          currency?: Database["public"]["Enums"]["currency_type"]
+          galleries?: number | null
+          is_published?: boolean | null
+          location_city?: string
+          location_neighborhood?: string
+          location_province?: string
+          m2_total?: number | null
+          price?: number | null
+          prop_id?: string
+          prop_publisher_id?: string | null
+          property_images?: string[]
+          rooms?: number | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "properties_prop_publisher_id_fkey"
+            columns: ["prop_publisher_id"]
+            isOneToOne: false
+            referencedRelation: "prop_publishers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_profiles: {
+        Row: {
+          creation_date: string | null
+          id: string
+          is_admin: boolean | null
+          is_prop_publisher: boolean | null
+          last_auth_change: string | null
+          last_login: string | null
+          username: string
+        }
+        Insert: {
+          creation_date?: string | null
+          id: string
+          is_admin?: boolean | null
+          is_prop_publisher?: boolean | null
+          last_auth_change?: string | null
+          last_login?: string | null
+          username: string
+        }
+        Update: {
+          creation_date?: string | null
+          id?: string
+          is_admin?: boolean | null
+          is_prop_publisher?: boolean | null
+          last_auth_change?: string | null
+          last_login?: string | null
+          username?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -18,7 +156,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      currency_type: "USD" | "ARS"
     }
     CompositeTypes: {
       [_ in never]: never
