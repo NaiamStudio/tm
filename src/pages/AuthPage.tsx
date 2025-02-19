@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -75,7 +74,7 @@ const AuthPage = () => {
         if (data?.user) {
           const { data: profileData } = await supabase
             .from('user_profiles')
-            .select('is_admin')
+            .select('is_admin, is_prop_publisher')
             .eq('id', data.user.id)
             .single();
 
@@ -85,7 +84,9 @@ const AuthPage = () => {
           });
 
           if (profileData?.is_admin) {
-            navigate("/dashboard");
+            navigate("/dashboard/zadmin");
+          } else if (profileData?.is_prop_publisher) {
+            navigate("/dashboard/publisher");
           } else {
             navigate("/explore");
           }
