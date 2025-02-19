@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -111,7 +112,7 @@ const AuthPage = () => {
       case "magic-link":
         return "Iniciar con link mágico";
       case "recovery":
-        return "Recuperar cuenta";
+        return "Recuperar contraseña";
       default:
         return "Iniciar sesión";
     }
