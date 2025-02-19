@@ -20,16 +20,14 @@ const AuthPage = () => {
 
     try {
       if (mode === "signup") {
-        // Primero verificamos si existe el usuario y su estado
-        const { data: existingUser } = await supabase.auth.admin.listUsers({
-          filters: {
-            email: email
-          }
+        // Verificamos si el usuario existe usando signInWithOtp
+        const { error: checkError } = await supabase.auth.signInWithOtp({
+          email,
         });
 
-        // Si existe pero no está confirmado, lo eliminamos para permitir un nuevo registro
-        if (existingUser?.users?.[0] && !existingUser.users[0].email_confirmed_at) {
-          await supabase.auth.admin.deleteUser(existingUser.users[0].id);
+        // Si no hay error, significa que el usuario existe
+        if (!checkError) {
+          throw new Error("Este email ya está registrado. Si no has confirmado tu cuenta, revisa tu email o solicita un nuevo link de confirmación.");
         }
 
         const { data, error: signUpError } = await supabase.auth.signUp({
@@ -49,56 +47,46 @@ const AuthPage = () => {
           });
         }
       } else if (mode === "magic-link") {
-        // Verificar que el usuario exista y esté confirmado
-        const { data: { users } } = await supabase.auth.admin.listUsers({
-          filters: {
-            email: email
-          }
-        });
-
-        const userExists = users?.[0]?.email_confirmed_at;
-        
-        if (!userExists) {
-          throw new Error("Este email no está registrado o no ha sido confirmado.");
-        }
-
-        const { error } = await supabase.auth.signInWithOtp({
+        const { data, error } = await supabase.auth.signInWithOtp({
           email,
           options: {
             emailRedirectTo: `${window.location.origin}/auth`
           }
         });
 
-        if (error) throw error;
+        if (error) {
+          if (error.message.includes("Email not confirmed")) {
+            throw new Error("Este email no está confirmado. Por favor, confirma tu cuenta primero.");
+          }
+          throw error;
+        }
 
         toast({
           title: "Link mágico enviado",
           description: "Por favor, revisa tu email para iniciar sesión.",
         });
       } else if (mode === "recovery") {
-        // Verificar que el usuario exista y esté confirmado
-        const { data: { users } } = await supabase.auth.admin.listUsers({
-          filters: {
-            email: email
-          }
+        // Para recuperación, intentamos primero verificar si el usuario existe
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password: "dummy-password",
         });
 
-        const userExists = users?.[0]?.email_confirmed_at;
-        
-        if (!userExists) {
+        // Si no hay error de usuario no encontrado, procedemos con la recuperación
+        if (error && error.message.includes("Invalid login credentials")) {
+          const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: `${window.location.origin}/auth`
+          });
+
+          if (resetError) throw resetError;
+
+          toast({
+            title: "Recuperación iniciada",
+            description: "Por favor, revisa tu email para restablecer tu contraseña.",
+          });
+        } else if (error) {
           throw new Error("Este email no está registrado o no ha sido confirmado.");
         }
-
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/auth`
-        });
-
-        if (error) throw error;
-
-        toast({
-          title: "Recuperación iniciada",
-          description: "Por favor, revisa tu email para restablecer tu contraseña.",
-        });
       } else {
         const { data, error: signInError } = await supabase.auth.signInWithPassword({
           email,
