@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -73,24 +72,12 @@ const AuthPage = () => {
         if (signInError) throw signInError;
 
         if (data?.user) {
-          const { data: profileData } = await supabase
-            .from('user_profiles')
-            .select('is_admin, is_prop_publisher')
-            .eq('id', data.user.id)
-            .single();
-
           toast({
             title: "Inicio de sesión exitoso",
             description: "Bienvenido de vuelta!",
           });
-
-          if (profileData?.is_admin) {
-            navigate("/dashboard/zadmin");
-          } else if (profileData?.is_prop_publisher) {
-            navigate("/dashboard/publisher");
-          } else {
-            navigate("/explore");
-          }
+          
+          navigate("/dashboard");
         }
       }
     } catch (error: any) {
