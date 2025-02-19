@@ -55,7 +55,7 @@ const AuthPage = () => {
         });
       } else if (mode === "recovery") {
         const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/verify`
+          redirectTo: `${window.location.origin}/auth/reset-password`
         });
 
         if (resetError) throw resetError;
