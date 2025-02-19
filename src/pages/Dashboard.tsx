@@ -26,28 +26,68 @@ const Dashboard = () => {
   const [isEditingUsername, setIsEditingUsername] = useState(false);
 
   useEffect(() => {
-    checkUser();
-  }, []);
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      console.log("Checking auth, user:", user);
+      if (!user) {
+        console.log("No user found, redirecting to /auth");
+        navigate("/auth");
+        return;
+      }
+      checkUser();
+    };
+
+    checkAuth();
+  }, [navigate]);
 
   const checkUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      navigate("/auth");
-      return;
-    }
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        console.log("No user found in checkUser");
+        navigate("/auth");
+        return;
+      }
 
-    const { data: profile } = await supabase
-      .from("user_profiles")
-      .select("username, useremail, is_admin, is_prop_publisher")
-      .eq("id", user.id)
-      .single();
+      console.log("Fetching user profile for:", user.id);
+      const { data: profile, error } = await supabase
+        .from("user_profiles")
+        .select("username, useremail, is_admin, is_prop_publisher")
+        .eq("id", user.id)
+        .maybeSingle();
 
-    if (profile) {
-      setUsername(profile.username);
-      setEmail(profile.useremail || user.email || "");
-      setIsAdmin(profile.is_admin || false);
-      setIsPublisher(profile.is_prop_publisher || false);
-      checkUsernameChangeEligibility(user.id);
+      if (error) {
+        console.error("Error fetching profile:", error);
+        toast({
+          title: "Error",
+          description: "No se pudo cargar la información del usuario",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (profile) {
+        console.log("Profile found:", profile);
+        setUsername(profile.username);
+        setEmail(profile.useremail || user.email || "");
+        setIsAdmin(profile.is_admin || false);
+        setIsPublisher(profile.is_prop_publisher || false);
+        checkUsernameChangeEligibility(user.id);
+      } else {
+        console.log("No profile found for user:", user.id);
+        toast({
+          title: "Error",
+          description: "No se encontró el perfil del usuario",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error in checkUser:", error);
+      toast({
+        title: "Error",
+        description: "No se pudieron cargar los datos del usuario",
+        variant: "destructive",
+      });
     }
   };
 
