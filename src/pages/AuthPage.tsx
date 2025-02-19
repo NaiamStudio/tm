@@ -34,16 +34,9 @@ const AuthPage = () => {
         if (signUpError) throw signUpError;
 
         if (data?.user) {
-          const { error: profileError } = await supabase
-            .from('user_profiles')
-            .update({ useremail: email })
-            .eq('id', data.user.id);
-
-          if (profileError) throw profileError;
-
           toast({
             title: "Cuenta creada",
-            description: "Por favor, revisa tu correo. Se ha enviado un nuevo mensaje de confirmación.",
+            description: "Por favor, revisa tu correo. Se ha enviado un mensaje de confirmación.",
           });
         }
       } else if (mode === "magic-link") {
@@ -81,14 +74,18 @@ const AuthPage = () => {
         if (signInError) throw signInError;
 
         if (user) {
-          const { data: profile } = await supabase
+          const { data: profile, error: profileError } = await supabase
             .from('user_profiles')
             .select('username')
             .eq('id', user.id)
             .single();
 
+          if (profileError) throw profileError;
+
           if (profile?.username) {
             navigate(`/user/${profile.username}`);
+          } else {
+            throw new Error("No se encontró el perfil del usuario");
           }
         }
       }
@@ -182,7 +179,7 @@ const AuthPage = () => {
           </Button>
         </form>
         <div className="space-y-2 text-center">
-          {mode === "login" && (
+          {mode === "login" ? (
             <>
               <button
                 type="button"
@@ -206,8 +203,7 @@ const AuthPage = () => {
                 ¿Olvidaste tu contraseña?
               </button>
             </>
-          )}
-          {mode !== "login" && (
+          ) : (
             <button
               type="button"
               onClick={() => setMode("login")}
