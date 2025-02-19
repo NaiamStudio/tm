@@ -27,26 +27,12 @@ const Dashboard = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      try {
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
-        
-        if (authError) {
-          console.error("Error de autenticación:", authError);
-          navigate("/auth");
-          return;
-        }
-
-        if (!user) {
-          console.log("No hay usuario autenticado");
-          navigate("/auth");
-          return;
-        }
-
-        await fetchUserProfile(user.id);
-      } catch (error) {
-        console.error("Error en checkAuth:", error);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
         navigate("/auth");
+        return;
       }
+      await fetchUserProfile(user.id);
     };
 
     checkAuth();
@@ -56,48 +42,23 @@ const Dashboard = () => {
     try {
       setIsLoading(true);
 
-      const { data: profile, error } = await supabase
+      const { data: profile } = await supabase
         .from("user_profiles")
         .select("*")
         .eq("id", userId)
         .maybeSingle();
 
-      if (error) {
-        console.error("Error al obtener perfil:", error);
-        toast({
-          title: "Error",
-          description: "No se pudo cargar la información del usuario",
-          variant: "destructive",
-        });
-        return;
+      if (profile) {
+        setUsername(profile.username || "");
+        setEmail(profile.useremail || "");
+        setIsAdmin(profile.is_admin || false);
+        setIsPublisher(profile.is_prop_publisher || false);
+        await checkUsernameChangeEligibility(userId);
+      } else {
+        navigate("/auth");
       }
-
-      if (!profile) {
-        console.error("No se encontró el perfil del usuario");
-        toast({
-          title: "Error",
-          description: "No se encontró el perfil del usuario",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Actualizar estado con los datos del perfil
-      setUsername(profile.username || "");
-      setEmail(profile.useremail || "");
-      setIsAdmin(profile.is_admin || false);
-      setIsPublisher(profile.is_prop_publisher || false);
-
-      // Verificar elegibilidad para cambio de username
-      await checkUsernameChangeEligibility(userId);
-
     } catch (error) {
-      console.error("Error al procesar perfil:", error);
-      toast({
-        title: "Error",
-        description: "Ocurrió un error al cargar los datos del usuario",
-        variant: "destructive",
-      });
+      navigate("/auth");
     } finally {
       setIsLoading(false);
     }
