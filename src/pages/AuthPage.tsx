@@ -20,16 +20,6 @@ const AuthPage = () => {
 
     try {
       if (mode === "signup") {
-        // Verificamos si el usuario existe usando signInWithOtp
-        const { error: checkError } = await supabase.auth.signInWithOtp({
-          email,
-        });
-
-        // Si no hay error, significa que el usuario existe
-        if (!checkError) {
-          throw new Error("Este email ya está registrado. Si no has confirmado tu cuenta, revisa tu email o solicita un nuevo link de confirmación.");
-        }
-
         const { data, error: signUpError } = await supabase.auth.signUp({
           email,
           password,
@@ -42,51 +32,35 @@ const AuthPage = () => {
 
         if (data?.user) {
           toast({
-            title: "Registro iniciado",
-            description: "Por favor, verifica tu email para completar el registro. Revisa también tu carpeta de spam.",
+            title: "Cuenta creada",
+            description: "Por favor, revisa tu correo. Se ha enviado un nuevo mensaje de confirmación.",
           });
         }
       } else if (mode === "magic-link") {
-        const { data, error } = await supabase.auth.signInWithOtp({
+        const { error } = await supabase.auth.signInWithOtp({
           email,
           options: {
             emailRedirectTo: 'https://tm.lovable.app/verify'
           }
         });
 
-        if (error) {
-          if (error.message.includes("Email not confirmed")) {
-            throw new Error("Este email no está confirmado. Por favor, confirma tu cuenta primero.");
-          }
-          throw error;
-        }
+        if (error) throw error;
 
         toast({
           title: "Link mágico enviado",
           description: "Por favor, revisa tu email para iniciar sesión.",
         });
       } else if (mode === "recovery") {
-        // Para recuperación, intentamos primero verificar si el usuario existe
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email,
-          password: "dummy-password",
+        const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: 'https://tm.lovable.app/verify'
         });
 
-        // Si no hay error de usuario no encontrado, procedemos con la recuperación
-        if (error && error.message.includes("Invalid login credentials")) {
-          const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: 'https://tm.lovable.app/verify'
-          });
+        if (resetError) throw resetError;
 
-          if (resetError) throw resetError;
-
-          toast({
-            title: "Recuperación iniciada",
-            description: "Por favor, revisa tu email para restablecer tu contraseña.",
-          });
-        } else if (error) {
-          throw new Error("Este email no está registrado o no ha sido confirmado.");
-        }
+        toast({
+          title: "Recuperación iniciada",
+          description: "Por favor, revisa tu email para restablecer tu contraseña.",
+        });
       } else {
         const { data, error: signInError } = await supabase.auth.signInWithPassword({
           email,
