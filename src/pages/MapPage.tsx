@@ -327,7 +327,7 @@ const MapPage = () => {
               />
             </div>
             {showMap && (
-              <div className="absolute z-20 left-1/2 transform -translate-x-1/2 top-[120px] flex items-center gap-4 bg-white/10 px-4 py-2 rounded-full">
+              <div className="absolute z-20 left-1/2 transform -translate-x-1/2 top-4 flex items-center gap-4 bg-white/10 px-4 py-2 rounded-full">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-[#7FFFD4]"></div>
                   <span className="text-sm text-white">Alquiler</span>
@@ -344,6 +344,16 @@ const MapPage = () => {
         <div className={`grid ${showMap ? 'md:grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'} gap-6`}>
           {showMap && (
             <div className="relative md:order-2 md:h-[calc(100vh-200px)] h-[50vh] md:sticky md:top-24 bg-black z-10">
+              <div className="absolute z-20 left-1/2 transform -translate-x-1/2 top-4 flex items-center gap-4 bg-white/10 px-4 py-2 rounded-full">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-[#7FFFD4]"></div>
+                  <span className="text-sm text-white">Alquiler</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-[#FEF7CD]"></div>
+                  <span className="text-sm text-white">Venta</span>
+                </div>
+              </div>
               <MapComponent 
                 properties={filteredProperties}
                 onPropertySelect={handlePropertySelect}
