@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -71,28 +72,15 @@ const AuthPage = () => {
           description: "Por favor, revisa tu email para restablecer tu contraseña.",
         });
       } else {
-        const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        // Login mode
+        const { error: signInError } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
 
         if (signInError) throw signInError;
 
-        if (data?.user) {
-          const { error: profileError } = await supabase
-            .from('user_profiles')
-            .update({ useremail: email })
-            .eq('id', data.user.id);
-
-          if (profileError) throw profileError;
-
-          toast({
-            title: "Inicio de sesión exitoso",
-            description: "Bienvenido de vuelta!",
-          });
-          
-          navigate("/dashboard");
-        }
+        navigate("/dashboard");
       }
     } catch (error: any) {
       console.error("Auth error:", error);
